@@ -24,10 +24,12 @@ def block(in_channel,out_channel,k_size,stride, conv=False):
     return nn.Sequential(*layers)
     
 
-class ResNet50(nn.Module):
+class Model(nn.Module):
+    name = 'ResNet50'
+
     def __init__(self,in_channels,num_classes):
         super().__init__()
-        
+
         self.stg1 = nn.Sequential(
                                    nn.Conv2d(in_channels=in_channels,out_channels=64,kernel_size=(3),stride=(1),padding=1),
                                    nn.BatchNorm2d(64),
