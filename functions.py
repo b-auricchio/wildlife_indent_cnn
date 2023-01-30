@@ -33,10 +33,11 @@ def validate(model,loss_fn,dl):
 
     return val_loss, acc
 
-def fit (batch_size,epochs,train_dl,test_dl,model,loss_fn,optimiser,scheduler,grad_clip=None):
+def fit (batch_size,epochs,train_dl,test_dl,model,loss_fn,optimiser,scheduler=None,grad_clip=None):
     torch.cuda.empty_cache()
     
     history = {'lr':[0], 'val_loss':[0], 'train_loss':[0], 'acc':[0]}
+
 
     for epoch in range(epochs):
         print(f"Epoch {epoch+1}\n ----------------------")
@@ -61,7 +62,9 @@ def fit (batch_size,epochs,train_dl,test_dl,model,loss_fn,optimiser,scheduler,gr
                 nn.utils.clip_grad_value_(model.parameters(),grad_clip)
             
             optimiser.step()
-            scheduler.step()
+
+            if scheduler is not None: 
+                scheduler.step()
             
             lrs.append(get_lr(optimiser))
 
