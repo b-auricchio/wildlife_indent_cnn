@@ -60,7 +60,7 @@ class ResBottleneckBlock(nn.Module):
 
 
 class ResNet(nn.Module):
-    def __init__(self, in_channels, resblock, repeat, useBottleneck=False, outputs=1000, filters=None):
+    def __init__(self, in_channels, resblock, repeat, outputs, useBottleneck=False, filters=None):
         super().__init__()
         self.name = 'resnet'
 

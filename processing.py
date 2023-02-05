@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+from torchvision.utils import make_grid
 import torch
 import time
 
@@ -12,6 +13,16 @@ def to_dataframe(history):
     })
 
     return output
+
+def show_batch(dl):
+    for batch in dl:
+        images,labels = batch
+        fig, ax = plt.subplots(figsize=(7.5,7.5))
+        ax.set_yticks([])
+        ax.set_xticks([])
+        ax.imshow(make_grid(images[:20],nrow=5).permute(1,2,0))
+        break
+    plt.show()
 
 def export(history, model, time_elapsed):
     history = to_dataframe(history)
@@ -49,4 +60,10 @@ def plot_history(history):
 
     plt.show()
 
-
+'''
+def plot_result(model, dl, class_names):
+    model.eval()
+    for batch in dl:
+        fig = plt.figure(figsize=(5,5))
+        break
+'''
