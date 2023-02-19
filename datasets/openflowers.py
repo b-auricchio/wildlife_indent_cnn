@@ -23,6 +23,7 @@ test_transform = transforms.Compose([
 class Flowers(Dataset):
     def __init__(self, split, image_root, transform = None):
         self.num_classes = 102-10
+        self.split = split
         if split == 'train':
             self.data_path = './datasets/flowers_train.csv'
         if split == 'val':
@@ -45,7 +46,12 @@ class Flowers(Dataset):
 
     def __getitem__(self, index):
         image_path = os.path.join(self.image_root, self.data[index][0])
-        label = int(self.data[index][1])-1 #classes start at 0 instead of 1
+        
+        if self.split == 'train' or self.split == 'val':
+            label = int(self.data[index][1])-1 #classes start at 0 instead of 1
+        
+        if self.split == 'test':
+            label = int(self.data[index][1])
 
         image = Image.open(image_path).convert("RGB")
         if self.transform:
