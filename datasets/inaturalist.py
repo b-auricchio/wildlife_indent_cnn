@@ -8,7 +8,7 @@ stats = ((0.5074,0.4867,0.4411),(0.2011,0.1987,0.2025))
 train_transform = transforms.Compose([
     transforms.RandomHorizontalFlip(),
     transforms.Resize(232),
-    transforms.CenterCrop(224),
+    transforms.RandomCrop(224),
     transforms.ToTensor(),
     transforms.Normalize(*stats)
 ])

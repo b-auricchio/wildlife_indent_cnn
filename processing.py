@@ -9,7 +9,8 @@ def to_dataframe(history):
     {'accuracy': history["acc"],
      'train_loss': history["train_loss"],
      'val_loss': history["val_loss"],
-     'mean_lr': history["lr"]
+     'mean_lr': history["lr"],
+     'time_elapsed' : history["time_elapsed"]
     })
 
     return output

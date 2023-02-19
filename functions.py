@@ -10,7 +10,9 @@ def show_batch(dl):
         ax.set_yticks([])
         ax.set_xticks([])
         ax.imshow(make_grid(images[:20],nrow=5).permute(1,2,0))
+        plt.show()
         break
+        
 
 def get_lr(optimiser):
     for param_group in optimiser.param_groups:
@@ -33,7 +35,7 @@ def validate(model,loss_fn,dl):
 
     return val_loss, acc
 
-def fit (batch_size,epochs,train_dl,test_dl,model,loss_fn,optimiser,accum_iter,scheduler=None,grad_clip=None):
+def fit (batch_size,epochs,train_dl,test_dl,model,loss_fn,optimiser,scheduler=None,grad_clip=None):
     torch.cuda.empty_cache()
     
     history = {'lr':[0], 'val_loss':[0], 'train_loss':[0], 'acc':[0]}
@@ -54,23 +56,23 @@ def fit (batch_size,epochs,train_dl,test_dl,model,loss_fn,optimiser,accum_iter,s
             loss = loss_fn(predictions, labels)
             
             train_losses.append(loss)
-
+            
+            optimiser.zero_grad()
             loss.backward()
             
             if grad_clip:
                 nn.utils.clip_grad_value_(model.parameters(),grad_clip)
+            
+            optimiser.step()
 
-            if ((i+1) % accum_iter == 0 or (i+1) == len(train_dl)):
-                optimiser.zero_grad()
-                optimiser.step()
-                if scheduler is not None: 
-                    scheduler.step()
+            if scheduler is not None: 
+                scheduler.step()
             
             lrs.append(get_lr(optimiser))
 
+
             if i % 100 == 0:
                 print(f"Batch {i}:  [{batch_size*i:>5d}/{train_dl.setlength():>5d}]")
-                
         
         val_loss, accuracy = validate(model,loss_fn,test_dl)
 
