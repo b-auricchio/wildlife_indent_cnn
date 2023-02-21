@@ -93,6 +93,7 @@ def to_device(data,device):
         return [to_device(x,device) for x in data]
     return data.to(device,non_blocking=True)
 
+
 class ToDeviceLoader:
     def __init__(self,dl,device):
         self.dataloader = dl

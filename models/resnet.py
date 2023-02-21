@@ -1,5 +1,4 @@
 import torch.nn as nn
-import torch
 import torch.nn.functional as F
 
 #output = floor[(input + 2*padding — kernel) / stride + 1]

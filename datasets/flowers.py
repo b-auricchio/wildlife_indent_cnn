@@ -1,6 +1,5 @@
 import os
 
-from torchvision.datasets.folder import default_loader
 from torchvision.datasets.utils import download_url
 from torch.utils.data import Dataset
 import tarfile
@@ -83,7 +82,10 @@ class Flowers(Dataset):
         
         return image, label
 
-def get_datasets():
+def get_datasets(download=True):
+    if download:
+        download_data()
+
     train_dataset = Flowers(split = 'train', transform=train_transform)
     val_dataset = Flowers(split = 'val', transform=test_transform)
     test_dataset_known = Flowers(split = 'test_known', transform=test_transform)

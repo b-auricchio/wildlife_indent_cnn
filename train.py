@@ -4,22 +4,25 @@ import torch.nn as nn
 from torch.utils.data.dataloader import DataLoader
 import time
 from IPython.display import display
+import config as cfg
 
-from datasets import flowers
-from functions import fit
-from functions import ToDeviceLoader
-from models.ResNet import ResNet, ResBlock, ResBottleneckBlock
-import processing
+from datasets import flowers, cub
+from utils import fit
+from utils import ToDeviceLoader
+from models import models
+import misc
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print("Using {} device".format(device))
 
-batch_size = 64
-epochs = 50
+batch_size = cfg.batch_size
+epochs = cfg.epochs
 
-num_classes = flowers.num_known_classes
+dataset = eval(cfg.dataset)
 
-datasets = flowers.get_datasets()
+num_classes = dataset.num_known_classes
+
+datasets = dataset.get_datasets(cfg.download)
 
 train_dl = DataLoader(datasets['train'], batch_size=batch_size,shuffle=True)
 val_dl = DataLoader(datasets['val'], batch_size=batch_size)
@@ -27,11 +30,11 @@ val_dl = DataLoader(datasets['val'], batch_size=batch_size)
 train_dl = ToDeviceLoader(train_dl,device)
 val_dl = ToDeviceLoader(val_dl,device)
 
-model = ResNet(3, ResBlock, [3,4,6,3], useBottleneck=False, outputs=num_classes).to(device)
+model = models.get_model(cfg.model, in_channels=3, num_classes=num_classes).to(device)
 
-max_lr=0.01
-grad_clip = 0.1
-weight_decay = 1e-4
+max_lr = cfg.eta_max
+grad_clip = cfg.grad_clip
+weight_decay = cfg.weight_decay
 
 loss_fn = nn.CrossEntropyLoss()
 optimiser = optim.Adam(model.parameters(),weight_decay=weight_decay,lr=max_lr)
@@ -43,7 +46,7 @@ history = fit(batch_size,epochs,train_dl,val_dl,model,loss_fn,optimiser,grad_cli
 print(f"--- {(time.time() - start_time):>0.1f} seconds ---")
 
 history['time_elapsed'] = time.time() - start_time
-history = processing.to_dataframe(history)
+history = misc.to_dataframe(history)
 
 filename = model.name + '_' + time.strftime("%Y%m%d_%H%M%S")
 
