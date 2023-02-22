@@ -5,6 +5,7 @@ from torch.utils.data.dataloader import DataLoader
 import time
 from IPython.display import display
 import config as cfg
+import os
 
 from datasets import flowers, cub
 from utils import fit
@@ -16,7 +17,10 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 print("Using {} device".format(device))
 
 batch_size = cfg.batch_size
-epochs = cfg.epochs
+
+if cfg.DEBUG:
+    epochs = cfg.debug_epochs
+else: epochs = cfg.epochs
 
 dataset = eval(cfg.dataset)
 
@@ -48,9 +52,25 @@ print(f"--- {(time.time() - start_time):>0.1f} seconds ---")
 history['time_elapsed'] = time.time() - start_time
 history = misc.to_dataframe(history)
 
-filename = model.name + '_' + time.strftime("%Y%m%d_%H%M%S")
+acc = history['accuracy'].tolist()[-1]*100
 
-history.to_csv(('./output/'+filename+'.csv'), encoding='utf-8', index=False)
-torch.save(model.state_dict(), './dict/'+ filename +'.pt')
+filename = f'{cfg.model}_{cfg.dataset}_{(acc):.1f}acc_{str(epochs)}epochs_{cfg.scheduler}'
+
+try:
+    history.to_csv(os.path.join(cfg.dict_path, filename +'.csv'), encoding='utf-8', index=False)
+    torch.save(model.state_dict(), os.path.join(cfg.dict_path, filename +'.pt'))
+    print(f'Saved to {cfg.dict_path}')
+except:
+    print('Local save directory not found!')
+    pass
+
+try:
+    history.to_csv(os.path.join(cfg.cloud_dict_path, filename +'.csv'), encoding='utf-8', index=False)
+    torch.save(model.state_dict(), os.path.join(cfg.cloud_dict_path ,filename +'.pt'))
+    print(f'Saved to {cfg.cloud_dict_path}')
+except:
+    print('Cloud save directory not found!')
+    pass
 
 display(history)
+misc.plot_history(history)
