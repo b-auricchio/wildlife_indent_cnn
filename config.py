@@ -6,7 +6,7 @@ epochs = 90
 print_freq = 100
 
 ###DATASET
-dataset = 'cub'
+dataset = 'flowers'
 download = False
 
 ###OPTIMISER
@@ -23,12 +23,14 @@ loss_fn = 'crossentropy'
 label_smoothing = 0
 
 ###MODEL
-model = 'resnet18'
+model = 'resnet50'
 
 ###TESTING
+filename = 'resnet50_flowers_91.2acc_90epochs_onecycle'
 use_range = True
-tau_min = 0.6
-tau_max = 0.9
+tau_num_steps = 5
+tau_min = 0.985
+tau_max = 0.995
 
 #  if range not used
 tau = 0.85
