@@ -3,11 +3,11 @@ debug_epochs = 1
 
 ###TRAINING
 epochs = 90
-batch_size = 64
+batch_size = 32
 print_freq = 100
 
 ###DATASET
-dataset = 'flowers'
+dataset = 'cub'
 download = False
 
 ###OPTIMISER
@@ -37,4 +37,4 @@ tau = 0.85
 
 #OUTPUT
 dict_path = './output'
-cloud_dict_path = '../MyDrive/RP3'
+cloud_dict_path = '../drive/MyDrive/RP3'
