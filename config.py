@@ -3,7 +3,6 @@ debug_epochs = 1
 
 ###TRAINING
 epochs = 90
-batch_size = 32
 print_freq = 100
 
 ###DATASET
@@ -18,7 +17,6 @@ weight_decay = 1e-4
 ###SCHEDULER
 scheduler = 'onecycle'
 #  onecycle
-eta_max = 0.01
 
 ###LOSS
 loss_fn = 'crossentropy'

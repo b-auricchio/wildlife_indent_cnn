@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
 from torchvision.utils import make_grid
+from tqdm import tqdm
 
 def show_batch(dl):
     for batch in dl:
@@ -35,12 +36,10 @@ def validate(model,loss_fn,dl):
 
     return val_loss, acc
 
-def fit (batch_size,epochs,train_dl,test_dl,model,loss_fn,optimiser,scheduler=None,grad_clip=None):
+def fit (batch_size,epochs,train_dl,test_dl,model,loss_fn,optimiser,scheduler=None,grad_clip=None, print_freq=100):
     torch.cuda.empty_cache()
     
     history = {'lr':[0], 'val_loss':[0], 'train_loss':[0], 'acc':[0]}
-
-
     for epoch in range(epochs):
         print(f"Epoch {epoch+1}\n ----------------------")
 
@@ -71,7 +70,7 @@ def fit (batch_size,epochs,train_dl,test_dl,model,loss_fn,optimiser,scheduler=No
             lrs.append(get_lr(optimiser))
 
 
-            if i % 100 == 0:
+            if i % print_freq == 0:
                 print(f"Batch {i}:  [{batch_size*i:>5d}/{train_dl.setlength():>5d}]")
         
         val_loss, accuracy = validate(model,loss_fn,test_dl)

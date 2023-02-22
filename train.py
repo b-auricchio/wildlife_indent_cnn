@@ -16,27 +16,24 @@ import misc
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print("Using {} device".format(device))
 
-batch_size = cfg.batch_size
-
 if cfg.DEBUG:
     epochs = cfg.debug_epochs
 else: epochs = cfg.epochs
 
 dataset = eval(cfg.dataset)
 
+batch_size = dataset.batch_size
 num_classes = dataset.num_known_classes
-
 datasets = dataset.get_datasets(cfg.download)
 
 train_dl = DataLoader(datasets['train'], batch_size=batch_size,shuffle=True)
 val_dl = DataLoader(datasets['val'], batch_size=batch_size)
-
 train_dl = ToDeviceLoader(train_dl,device)
 val_dl = ToDeviceLoader(val_dl,device)
 
 model = models.get_model(cfg.model, in_channels=3, num_classes=num_classes).to(device)
 
-max_lr = cfg.eta_max
+max_lr = dataset.eta
 grad_clip = cfg.grad_clip
 weight_decay = cfg.weight_decay
 
@@ -44,8 +41,17 @@ loss_fn = nn.CrossEntropyLoss()
 optimiser = optim.Adam(model.parameters(),weight_decay=weight_decay,lr=max_lr)
 scheduler = torch.optim.lr_scheduler.OneCycleLR(optimiser, max_lr=max_lr, steps_per_epoch=len(train_dl), epochs=epochs)
 
+print("\nTraining \n ----------------------")
+print(f"Model: {cfg.model}")
+print(f"Dataset: {cfg.dataset}")
+print("\nHyperparameters \n ----------------------")
+print(f"ETA: {max_lr}")
+print(f"Batch size: {batch_size}")
+print(f"Image size: {dataset.image_size}")
+print("\n")
+
 start_time = time.time()
-history = fit(batch_size,epochs,train_dl,val_dl,model,loss_fn,optimiser,grad_clip=grad_clip, scheduler=scheduler)
+history = fit(batch_size,epochs,train_dl,val_dl,model,loss_fn,optimiser,grad_clip=grad_clip, scheduler=scheduler, print_freq = cfg.print_freq)
 
 print(f"--- {(time.time() - start_time):>0.1f} seconds ---")
 
