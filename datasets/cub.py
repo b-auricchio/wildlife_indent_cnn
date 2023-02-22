@@ -7,6 +7,11 @@ from torchvision import transforms
 import csv
 from PIL import Image
 
+#hyperparameters
+label_smoothing = 0.3
+eta = 1e-3
+batch_size = 32
+image_size = 448
 num_known_classes = 160
 
 root = './data/cub/'
@@ -23,8 +28,9 @@ def download_data():
 stats = ((0.4893, 0.5014, 0.4416), (0.2284, 0.2235, 0.2612))
 train_transform = transforms.Compose([
     transforms.RandomHorizontalFlip(),
-    transforms.Resize(232),
-    transforms.RandomCrop(224),
+    transforms.Resize(500),
+    transforms.RandomCrop(448),
+    transforms.RandAugment(num_ops=2, magnitude=9),
     transforms.ToTensor(),
     transforms.Normalize(*stats)
 ])

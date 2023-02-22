@@ -9,9 +9,9 @@ from PIL import Image
 
 #hypermarameters
 label_smoothing = 0
+eta = 1e-2
+batch_size = 128
 image_size = 224
-lr = 1e-2
-batch_size = 64
 num_known_classes = 92
 
 root = './data/flowers102/'
@@ -29,11 +29,12 @@ def download_data():
 
     download_url(labels_url, root, labels_filename)
 
-stats = ((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+stats = ((0.4668, 0.3928, 0.3011),(0.2976, 0.2467, 0.2748))
 train_transform = transforms.Compose([
     transforms.RandomHorizontalFlip(),
     transforms.Resize(232),
     transforms.RandomCrop(224),
+    transforms.RandAugment(num_ops=1, magnitude=8),
     transforms.ToTensor(),
     transforms.Normalize(*stats)
 ])
