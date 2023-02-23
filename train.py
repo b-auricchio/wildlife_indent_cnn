@@ -8,6 +8,7 @@ import config as cfg
 import os
 
 from datasets import flowers, cub
+import utils
 from utils import fit
 from utils import ToDeviceLoader
 from models import models
@@ -31,15 +32,16 @@ val_dl = DataLoader(datasets['val'], batch_size=batch_size)
 train_dl = ToDeviceLoader(train_dl,device)
 val_dl = ToDeviceLoader(val_dl,device)
 
-model = models.get_model(cfg.model, in_channels=3, num_classes=num_classes).to(device)
+model = models.get_model(cfg.model, in_channels=3, num_classes=num_classes, width_scaling=cfg.width_scaling).to(device)
 
 max_lr = dataset.eta
 grad_clip = cfg.grad_clip
 weight_decay = cfg.weight_decay
+label_smoothing = dataset.label_smoothing
 
-loss_fn = nn.CrossEntropyLoss()
+loss_fn = nn.CrossEntropyLoss(label_smoothing)
 optimiser = optim.Adam(model.parameters(),weight_decay=weight_decay,lr=max_lr)
-scheduler = torch.optim.lr_scheduler.OneCycleLR(optimiser, max_lr=max_lr, steps_per_epoch=len(train_dl), epochs=epochs)
+scheduler = utils.get_scheduler(optimiser, cfg)
 
 print("\nTraining \n ----------------------")
 print(f"Model: {cfg.model}")
@@ -60,7 +62,7 @@ history = misc.to_dataframe(history)
 
 acc = history['accuracy'].tolist()[-1]*100
 
-filename = f'{cfg.model}_{cfg.dataset}_{(acc):.1f}acc_{str(epochs)}epochs_{cfg.scheduler}'
+filename = f'{cfg.model}_{cfg.dataset}_width{cfg.width_scaling}_size{cfg.img_size}_{cfg.scheduler}'
 
 try:
     history.to_csv(os.path.join(cfg.dict_path, filename +'.csv'), encoding='utf-8', index=False)

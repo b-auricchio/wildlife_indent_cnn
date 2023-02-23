@@ -1,7 +1,6 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
-#output = floor[(input + 2*padding — kernel) / stride + 1]
 
 class ResBlock(nn.Module):
     def __init__(self, in_channels, out_channels, downsample):
@@ -34,7 +33,7 @@ class ResBottleneckBlock(nn.Module):
     def __init__(self, in_channels, out_channels, downsample):
         super().__init__()
         self.downsample = downsample
-        self.conv1 = nn.Conv2d(in_channels, out_channels//4, kernel_size=1, stride=1)
+        self.conv1 = nn.Conv2d(in_channels, out_channels//4, kernel_size=1, stride=1) #
         self.conv2 = nn.Conv2d(out_channels//4, out_channels//4, kernel_size=3, stride=2 if downsample else 1, padding=1)
         self.conv3 = nn.Conv2d(out_channels//4, out_channels, kernel_size=1, stride=1)
         self.shortcut = nn.Sequential()
@@ -59,7 +58,7 @@ class ResBottleneckBlock(nn.Module):
 
 
 class ResNet(nn.Module):
-    def __init__(self, in_channels, resblock, repeat, outputs, useBottleneck=False, filters=None):
+    def __init__(self, in_channels, resblock, repeat, outputs, useBottleneck=False, k = 1, filters=None):
         super().__init__()
         self.name = 'resnet'
 
@@ -72,9 +71,9 @@ class ResNet(nn.Module):
 
         if filters == None:
             if useBottleneck:
-                filters = [64, 256, 512, 1024, 2048]
+                filters = [64*k, 256*k, 512*k, 1024*k, 2048*k]
             else:
-                filters = [64, 64, 128, 256, 512]
+                filters = [64*k, 64*k, 128*k, 256*k, 512*k]
 
         self.layer1 = nn.Sequential()
         self.layer1.add_module('conv2_1', resblock(filters[0], filters[1], downsample=False))
