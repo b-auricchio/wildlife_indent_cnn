@@ -92,6 +92,15 @@ def to_device(data,device):
         return [to_device(x,device) for x in data]
     return data.to(device,non_blocking=True)
 
+def get_scheduler(optim, cfg, steps_per_epoch=None):
+    if cfg.scheduler == 'cosine':
+        num_restarts = cfg.num_restarts
+        return torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optim, T_0=cfg.epochs/(num_restarts), eta_min=cfg.eta*0.001)
+
+    if cfg.scheduler == 'onecycle':
+        scheduler = torch.optim.lr_scheduler.OneCycleLR(optim, max_lr=cfg.eta, steps_per_epoch=steps_per_epoch, epochs=cfg.epochs)
+
+
 
 class ToDeviceLoader:
     def __init__(self,dl,device):
