@@ -1,14 +1,16 @@
-DEBUG = True
+DEBUG = False
 debug_epochs = 1
 
 ###TRAINING
-epochs = 90
+epochs = 10
 print_freq = 100
+eta = 1e-3
+batch_size = 128
 
 ###DATASET
 dataset = 'cub'
 download = False
-img_size = 448
+img_size = 224
 
 ###OPTIMISER
 optimiser = 'adam'
@@ -24,8 +26,8 @@ num_restarts = 2
 loss_fn = 'crossentropy'
 
 ###MODEL
-model = 'resnet50'
-width_scaling = 1
+model = 'resnet18'
+width_scaling = 2
 
 ###TESTING
 filename = 'resnet50_flowers_91.2acc_90epochs_onecycle'

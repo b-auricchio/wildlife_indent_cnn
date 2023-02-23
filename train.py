@@ -23,7 +23,7 @@ else: epochs = cfg.epochs
 
 dataset = eval(cfg.dataset)
 
-batch_size = dataset.batch_size
+batch_size = cfg.batch_size
 num_classes = dataset.num_known_classes
 datasets = dataset.get_datasets(cfg.download)
 
@@ -39,7 +39,7 @@ grad_clip = cfg.grad_clip
 weight_decay = cfg.weight_decay
 label_smoothing = dataset.label_smoothing
 
-loss_fn = nn.CrossEntropyLoss(label_smoothing)
+loss_fn = nn.CrossEntropyLoss(label_smoothing=label_smoothing)
 optimiser = optim.Adam(model.parameters(),weight_decay=weight_decay,lr=max_lr)
 scheduler = utils.get_scheduler(optimiser, cfg)
 
@@ -47,9 +47,10 @@ print("\nTraining \n ----------------------")
 print(f"Model: {cfg.model}")
 print(f"Dataset: {cfg.dataset}")
 print("\nHyperparameters \n ----------------------")
-print(f"ETA: {max_lr}")
+print(f"Eta: {max_lr}")
 print(f"Batch size: {batch_size}")
 print(f"Image size: {dataset.image_size}")
+print(f"Width scaling: {cfg.width_scaling}")
 print("\n")
 
 start_time = time.time()

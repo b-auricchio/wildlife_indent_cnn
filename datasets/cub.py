@@ -29,15 +29,15 @@ def download_data():
 stats = ((0.4893, 0.5014, 0.4416), (0.2284, 0.2235, 0.2612))
 train_transform = transforms.Compose([
     transforms.RandomHorizontalFlip(),
-    transforms.Resize(int(image_size*1.1)),
+    transforms.Resize(int(image_size*1.2)),
     transforms.RandomCrop(image_size),
-    transforms.RandAugment(num_ops=2, magnitude=9),
+    transforms.RandAugment(num_ops=2, magnitude=15),
     transforms.ToTensor(),
     transforms.Normalize(*stats)
 ])
 
 test_transform = transforms.Compose([
-    transforms.Resize(int(image_size*1.1)),
+    transforms.Resize(int(image_size*1.2)),
     transforms.CenterCrop(image_size),
     transforms.ToTensor(),
     transforms.Normalize(*stats)

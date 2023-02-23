@@ -62,18 +62,20 @@ class ResNet(nn.Module):
         super().__init__()
         self.name = 'resnet'
 
+        layer0_features = int(64*k)
+
         self.layer0 = nn.Sequential(
-            nn.Conv2d(in_channels, 64, kernel_size=7, stride=2, padding=3),
+            nn.Conv2d(in_channels, layer0_features, kernel_size=7, stride=2, padding=3),
             nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
-            nn.BatchNorm2d(64),
+            nn.BatchNorm2d(layer0_features),
             nn.ReLU()
         )
 
         if filters == None:
             if useBottleneck:
-                filters = [64*k, 256*k, 512*k, 1024*k, 2048*k]
+                filters = [int(64*k), int(256*k), int(512*k), int(1024*k), int(2048*k)]
             else:
-                filters = [64*k, 64*k, 128*k, 256*k, 512*k]
+                filters = [int(64*k), int(64*k), int(128*k), int(256*k), int(512*k)]
 
         self.layer1 = nn.Sequential()
         self.layer1.add_module('conv2_1', resblock(filters[0], filters[1], downsample=False))
