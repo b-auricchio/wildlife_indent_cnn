@@ -26,8 +26,8 @@ num_restarts = 2
 loss_fn = 'crossentropy'
 
 ###MODEL
-model = 'resnet18'
-width_scaling = 2
+model = 'resnet50'
+width_scaling = 1
 
 ###TESTING
 filename = 'resnet50_flowers_91.2acc_90epochs_onecycle'
