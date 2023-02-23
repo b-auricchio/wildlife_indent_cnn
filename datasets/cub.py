@@ -6,12 +6,13 @@ import tarfile
 from torchvision import transforms
 import csv
 from PIL import Image
+import config as cfg
 
 #hyperparameters
 label_smoothing = 0.3
 eta = 1e-3
 batch_size = 32
-image_size = 448
+image_size = cfg.img_size
 num_known_classes = 160
 
 root = './data/cub/'
@@ -28,16 +29,16 @@ def download_data():
 stats = ((0.4893, 0.5014, 0.4416), (0.2284, 0.2235, 0.2612))
 train_transform = transforms.Compose([
     transforms.RandomHorizontalFlip(),
-    transforms.Resize(500),
-    transforms.RandomCrop(448),
+    transforms.Resize(int(image_size*1.1)),
+    transforms.RandomCrop(image_size),
     transforms.RandAugment(num_ops=2, magnitude=9),
     transforms.ToTensor(),
     transforms.Normalize(*stats)
 ])
 
 test_transform = transforms.Compose([
-    transforms.Resize(232),
-    transforms.CenterCrop(224),
+    transforms.Resize(int(image_size*1.1)),
+    transforms.CenterCrop(image_size),
     transforms.ToTensor(),
     transforms.Normalize(*stats)
 ])

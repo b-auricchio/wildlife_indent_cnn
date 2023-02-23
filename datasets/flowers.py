@@ -6,12 +6,13 @@ import tarfile
 from torchvision import transforms
 import csv
 from PIL import Image
+import config as cfg
 
 #hypermarameters
 label_smoothing = 0
 eta = 1e-2
 batch_size = 128
-image_size = 224
+image_size = cfg.img_size
 num_known_classes = 92
 
 root = './data/flowers102/'
@@ -32,16 +33,16 @@ def download_data():
 stats = ((0.4668, 0.3928, 0.3011),(0.2976, 0.2467, 0.2748))
 train_transform = transforms.Compose([
     transforms.RandomHorizontalFlip(),
-    transforms.Resize(232),
-    transforms.RandomCrop(224),
+    transforms.Resize(int(image_size*1.1)),
+    transforms.RandomCrop(image_size),
     transforms.RandAugment(num_ops=1, magnitude=8),
     transforms.ToTensor(),
     transforms.Normalize(*stats)
 ])
 
 test_transform = transforms.Compose([
-    transforms.Resize(232),
-    transforms.CenterCrop(224),
+    transforms.Resize(int(image_size*1.1)),
+    transforms.CenterCrop(image_size),
     transforms.ToTensor(),
     transforms.Normalize(*stats)
 ])
