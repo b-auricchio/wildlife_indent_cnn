@@ -1,16 +1,16 @@
-DEBUG = False
-debug_epochs = 1
+DEBUG = True
+debug_epochs = 10
 
 ###TRAINING
-epochs = 10
+epochs = 90
 print_freq = 100
 eta = 1e-3
-batch_size = 128
+batch_size = 32
 
 ###DATASET
 dataset = 'cub'
 download = False
-img_size = 224
+img_size = 128   #128, 224, 448
 
 ###OPTIMISER
 optimiser = 'adam'
@@ -18,7 +18,7 @@ grad_clip = 0.1
 weight_decay = 1e-4
 
 ###SCHEDULER
-scheduler = 'cosine'
+scheduler = 'onecycle'
 #  cosine
 num_restarts = 2
 
@@ -26,8 +26,10 @@ num_restarts = 2
 loss_fn = 'crossentropy'
 
 ###MODEL
-model = 'resnet50'
-width_scaling = 1
+model = 'wideresnet' #resnet 18, resnet 34, resnet 50 (resnet 101), wideresnet
+
+depth_scaling = 4 #for wideresnet only (n)
+width_scaling = 4 #for wideresnet only (k)
 
 ###TESTING
 filename = 'resnet50_flowers_91.2acc_90epochs_onecycle'

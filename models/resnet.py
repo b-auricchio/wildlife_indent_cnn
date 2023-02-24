@@ -56,13 +56,12 @@ class ResBottleneckBlock(nn.Module):
         input = input + shortcut
         return F.relu(input)
 
-
 class ResNet(nn.Module):
-    def __init__(self, in_channels, resblock, repeat, outputs, useBottleneck=False, k = 1, filters=None):
+    def __init__(self, in_channels, resblock, repeat, outputs, useBottleneck=False, features=None):
         super().__init__()
         self.name = 'resnet'
 
-        layer0_features = int(64*k)
+        layer0_features = 64
 
         self.layer0 = nn.Sequential(
             nn.Conv2d(in_channels, layer0_features, kernel_size=7, stride=2, padding=3),
@@ -71,36 +70,36 @@ class ResNet(nn.Module):
             nn.ReLU()
         )
 
-        if filters == None:
+        if features == None:
             if useBottleneck:
-                filters = [int(64*k), int(256*k), int(512*k), int(1024*k), int(2048*k)]
+                features = [64, 256, 512, 1024, 2048]
             else:
-                filters = [int(64*k), int(64*k), int(128*k), int(256*k), int(512*k)]
+                features = [64, 64, 128, 256, 512]
 
         self.layer1 = nn.Sequential()
-        self.layer1.add_module('conv2_1', resblock(filters[0], filters[1], downsample=False))
+        self.layer1.add_module('conv2_1', resblock(features[0], features[1], downsample=False))
         for i in range(1, repeat[0]):
-                self.layer1.add_module('conv2_%d'%(i+1,), resblock(filters[1], filters[1], downsample=False))
+                self.layer1.add_module('conv2_%d'%(i+1,), resblock(features[1], features[1], downsample=False))
 
         self.layer2 = nn.Sequential()
-        self.layer2.add_module('conv3_1', resblock(filters[1], filters[2], downsample=True))
+        self.layer2.add_module('conv3_1', resblock(features[1], features[2], downsample=True))
         for i in range(1, repeat[1]):
-                self.layer2.add_module('conv3_%d' % (i+1,), resblock(filters[2], filters[2], downsample=False))
+                self.layer2.add_module('conv3_%d' % (i+1,), resblock(features[2], features[2], downsample=False))
 
         self.layer3 = nn.Sequential()
-        self.layer3.add_module('conv4_1', resblock(filters[2], filters[3], downsample=True))
+        self.layer3.add_module('conv4_1', resblock(features[2], features[3], downsample=True))
         for i in range(1, repeat[2]):
-            self.layer3.add_module('conv2_%d' % (i+1,), resblock(filters[3], filters[3], downsample=False))
+            self.layer3.add_module('conv2_%d' % (i+1,), resblock(features[3], features[3], downsample=False))
 
         self.layer4 = nn.Sequential()
-        self.layer4.add_module('conv5_1', resblock(filters[3], filters[4], downsample=True))
+        self.layer4.add_module('conv5_1', resblock(features[3], features[4], downsample=True))
         for i in range(1, repeat[3]):
-            self.layer4.add_module('conv3_%d'%(i+1,), resblock(filters[4], filters[4], downsample=False))
+            self.layer4.add_module('conv3_%d'%(i+1,), resblock(features[4], features[4], downsample=False))
 
         ##Classify
         self.gap = nn.AdaptiveAvgPool2d(1)
         self.flatten = nn.Flatten()
-        self.fc = nn.Linear(filters[4], outputs)
+        self.fc = nn.Linear(features[4], outputs)
 
     def forward(self, input):
         out = self.layer0(input)
