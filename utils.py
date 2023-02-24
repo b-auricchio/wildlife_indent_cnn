@@ -15,11 +15,11 @@ def show_batch(dl):
         break
         
 
-def get_lr(optimiser):
+def get_batch_lrs(optimiser):
     for param_group in optimiser.param_groups:
         return param_group['lr']
 
-def validate(model,loss_fn,dl):
+def validate(model,dl,loss_fn):
     losses = []
     model.eval()
     size = dl.setlength()
@@ -31,15 +31,14 @@ def validate(model,loss_fn,dl):
             losses.append(loss_fn(pred,y))
             correct += (pred.argmax(1) == y).sum().item()
 
-    val_loss = torch.stack(losses).mean().item()
+    loss = torch.stack(losses).mean().item()
     acc = correct/size
+    return acc, loss
 
-    return val_loss, acc
-
-def fit (batch_size,epochs,train_dl,test_dl,model,loss_fn,optimiser,scheduler=None,grad_clip=None, print_freq=100):
+def fit (batch_size,epochs,train_dl,test_dl,model,loss_fn,optimiser, cfg, scheduler=None,grad_clip=None, print_freq=100):
     torch.cuda.empty_cache()
     
-    history = {'lr':[0], 'val_loss':[0], 'train_loss':[0], 'acc':[0]}
+    history = {'lr':[0], 'val_loss':[0], 'train_loss':[0], 'val_acc':[0], 'train_acc':[0]}
     for epoch in range(epochs):
         print(f"Epoch {epoch+1}\n ----------------------")
 
@@ -64,24 +63,28 @@ def fit (batch_size,epochs,train_dl,test_dl,model,loss_fn,optimiser,scheduler=No
             
             optimiser.step()
 
-            if scheduler is not None: 
-                scheduler.step()
-            
-            lrs.append(get_lr(optimiser))
-
+            if cfg.scheduler == 'cosine': 
+                scheduler.step(epoch+ i / len(train_dl))
+            elif cfg.scheduler == 'onecycle':
+                 scheduler.step()
+            else:
+                print('no scheduler being used')
 
             if i % print_freq == 0:
                 print(f"Batch {i}:  [{batch_size*i:>5d}/{train_dl.setlength():>5d}]")
         
-        val_loss, accuracy = validate(model,loss_fn,test_dl)
+        val_acc, val_loss = validate(model,test_dl,loss_fn)
+        train_acc, _ = validate(model,train_dl, loss_fn)
 
-        print(f"Test Error: \n Accuracy: {(accuracy*100):>0.1f}%\n")
+        print(f"Validation Error: \n Accuracy: {(val_acc*100):>0.1f}%\n")
+        print(f"Train Error: \n Accuracy: {(train_acc*100):>0.1f}%\n")
 
         train_loss = torch.stack(train_losses).mean().item()
-        lr = sum(lrs)/batch_size
+        lr = optimiser.param_groups[0]['lr']
 
-        history['acc'].append(accuracy)
+        history['val_acc'].append(val_acc)
         history['val_loss'].append(val_loss)
+        history['train_acc'].append(train_acc)
         history['train_loss'].append(train_loss)
         history['lr'].append(lr)
 
@@ -92,13 +95,13 @@ def to_device(data,device):
         return [to_device(x,device) for x in data]
     return data.to(device,non_blocking=True)
 
-def get_scheduler(optim, cfg, steps_per_epoch=None):
+def get_scheduler(optim, cfg, epochs, steps_per_epoch=None):
     if cfg.scheduler == 'cosine':
         num_restarts = cfg.num_restarts
-        return torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optim, T_0=int(cfg.epochs/(num_restarts+1)), eta_min=cfg.eta*0.001)
+        return torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optim, T_0=int(epochs/(num_restarts+1)), eta_min=cfg.eta*0.001)
 
     if cfg.scheduler == 'onecycle':
-        scheduler = torch.optim.lr_scheduler.OneCycleLR(optim, max_lr=cfg.eta, steps_per_epoch=steps_per_epoch, epochs=cfg.epochs)
+        return torch.optim.lr_scheduler.OneCycleLR(optim, max_lr=cfg.eta, steps_per_epoch=steps_per_epoch, epochs=epochs)
 
 
 

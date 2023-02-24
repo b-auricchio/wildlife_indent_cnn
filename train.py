@@ -6,6 +6,7 @@ import time
 from IPython.display import display
 import config as cfg
 import os
+from matplotlib import pyplot as plt
 
 from datasets import flowers, cub
 import utils
@@ -32,7 +33,7 @@ val_dl = DataLoader(datasets['val'], batch_size=batch_size)
 train_dl = ToDeviceLoader(train_dl,device)
 val_dl = ToDeviceLoader(val_dl,device)
 
-model = models.get_model(cfg.model, in_channels=3, num_classes=num_classes, width_scaling=cfg.width_scaling).to(device)
+model = models.get_model(cfg, in_channels=3, num_classes=num_classes).to(device)
 
 max_lr = dataset.eta
 grad_clip = cfg.grad_clip
@@ -41,11 +42,13 @@ label_smoothing = dataset.label_smoothing
 
 loss_fn = nn.CrossEntropyLoss(label_smoothing=label_smoothing)
 optimiser = optim.Adam(model.parameters(),weight_decay=weight_decay,lr=max_lr)
-scheduler = utils.get_scheduler(optimiser, cfg)
+
+scheduler = utils.get_scheduler(optimiser, cfg, epochs, len(train_dl))
 
 print("\nTraining \n ----------------------")
 print(f"Model: {cfg.model}")
 print(f"Dataset: {cfg.dataset}")
+print(f"Scheduler: {cfg.scheduler}")
 print("\nHyperparameters \n ----------------------")
 print(f"Eta: {max_lr}")
 print(f"Batch size: {batch_size}")
@@ -54,16 +57,16 @@ print(f"Width scaling: {cfg.width_scaling}")
 print("\n")
 
 start_time = time.time()
-history = fit(batch_size,epochs,train_dl,val_dl,model,loss_fn,optimiser,grad_clip=grad_clip, scheduler=scheduler, print_freq = cfg.print_freq)
+history = fit(batch_size,epochs,train_dl,val_dl,model,loss_fn,optimiser,cfg,grad_clip=grad_clip, scheduler=scheduler, print_freq=cfg.print_freq)
 
 print(f"--- {(time.time() - start_time):>0.1f} seconds ---")
 
 history['time_elapsed'] = time.time() - start_time
 history = misc.to_dataframe(history)
 
-acc = history['accuracy'].tolist()[-1]*100
+acc = history['val_acc'].tolist()[-1]*100
 
-filename = f'{cfg.model}_{cfg.dataset}_width{cfg.width_scaling}_size{cfg.img_size}_{cfg.scheduler}'
+filename = f'{cfg.model}_{cfg.dataset}_size{cfg.img_size}_{cfg.scheduler}'
 
 try:
     history.to_csv(os.path.join(cfg.dict_path, filename +'.csv'), encoding='utf-8', index=False)
