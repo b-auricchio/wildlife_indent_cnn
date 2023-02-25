@@ -113,10 +113,10 @@ def roc(predictions, targets, plot=False):
     return auroc
 
 for tau in np.linspace(cfg.tau_min, cfg.tau_max, cfg.tau_num_steps):
-    print(f'\ntau: {tau}\n ----------------------')
+    print(f'\n Threshold: {tau}\n ----------------------')
     predictions, targets, in_mean, out_mean = get_binary_predictions_softmax(tau)
     auroc = roc(targets, predictions)
-    print('roc_auc_score: ', auroc)
+    print('AUROC: ', auroc)
 
-print(f'in-set mean: {in_mean}')
-print(f'out-set mean: {out_mean}')
+print(f'In-set mean: {in_mean}')
+print(f'Out-set mean: {out_mean}')

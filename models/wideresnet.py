@@ -49,7 +49,7 @@ class WideResNet(nn.Module):
         k = widen_factor
         n = depth_factor
 
-        features = [64, 64*k, 128*k, 256*k]
+        features = [16, 16*k, 32*k, 64*k]
         
         block = BasicBlock
         self.conv1 = nn.Conv2d(in_channels, features[0], kernel_size=3, stride=1,
@@ -57,7 +57,6 @@ class WideResNet(nn.Module):
         self.block1 = NetworkBlock(n, features[0], features[1], block, 1, drop_rate)
         self.block2 = NetworkBlock(n, features[1], features[2], block, 2, drop_rate)
         self.block3 = NetworkBlock(n, features[2], features[3], block, 2, drop_rate)
-        self.block4 = NetworkBlock(n, features[3], features[4], block, 2, drop_rate)
 
         # global average pooling and classifier
         self.bn1 = nn.BatchNorm2d(features[-1])
@@ -70,7 +69,6 @@ class WideResNet(nn.Module):
         out = self.block1(out)
         out = self.block2(out)
         out = self.block3(out)
-        out = self.block4(out)
         out = self.relu(self.bn1(out))
         out = F.avg_pool2d(out, 8)
         out = out.view(-1, self.features)
