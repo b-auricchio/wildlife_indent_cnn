@@ -38,7 +38,7 @@ def validate(model,dl,loss_fn):
 def fit (batch_size,epochs,train_dl,test_dl,model,loss_fn,optimiser, cfg, scheduler=None,grad_clip=None, print_freq=100):
     torch.cuda.empty_cache()
     
-    history = {'lr':[0], 'val_loss':[0], 'train_loss':[0], 'val_acc':[0], 'train_acc':[0]}
+    history = {'lr':[0], 'val_loss':[0], 'train_loss':[0], 'val_acc':[0]}
     for epoch in range(epochs):
         print(f"Epoch {epoch+1}\n ----------------------")
 
@@ -74,17 +74,17 @@ def fit (batch_size,epochs,train_dl,test_dl,model,loss_fn,optimiser, cfg, schedu
                 print(f"Batch {i}:  [{batch_size*i:>5d}/{train_dl.setlength():>5d}]")
         
         val_acc, val_loss = validate(model,test_dl,loss_fn)
-        train_acc, _ = validate(model,train_dl, loss_fn)
+        #train_acc, _ = validate(model,train_dl, loss_fn)
 
         print(f"Validation Error: \n Accuracy: {(val_acc*100):>0.1f}%\n")
-        print(f"Train Error: \n Accuracy: {(train_acc*100):>0.1f}%\n")
+        #print(f"Train Error: \n Accuracy: {(train_acc*100):>0.1f}%\n")
 
         train_loss = torch.stack(train_losses).mean().item()
         lr = optimiser.param_groups[0]['lr']
 
         history['val_acc'].append(val_acc)
         history['val_loss'].append(val_loss)
-        history['train_acc'].append(train_acc)
+        #history['train_acc'].append(train_acc)
         history['train_loss'].append(train_loss)
         history['lr'].append(lr)
 

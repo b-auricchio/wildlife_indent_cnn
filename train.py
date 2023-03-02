@@ -17,6 +17,7 @@ import misc
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print("Using {} device".format(device))
+torch.cuda.empty_cache()
 
 if cfg.DEBUG:
     epochs = cfg.debug_epochs

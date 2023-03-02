@@ -26,10 +26,10 @@ num_restarts = 2
 loss_fn = 'crossentropy'
 
 ###MODEL
-model = 'wideresnet' #resnet 18, resnet 34, resnet 50 (resnet 101), wideresnet
+model = 'resnet18' #resnet 18, resnet 34, resnet 50 (resnet 101), wideresnet
 
 depth_scaling = 4 #for wideresnet only (n)
-width_scaling = 10 #for wideresnet only (k)
+width_scaling = 1 #for wideresnet only (k)
 
 ###TESTING
 filename = 'resnet50_cub_64.4acc_90epochs_onecycle'
