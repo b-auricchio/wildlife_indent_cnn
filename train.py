@@ -35,6 +35,10 @@ train_dl = ToDeviceLoader(train_dl,device)
 val_dl = ToDeviceLoader(val_dl,device)
 
 model = models.get_model(cfg, in_channels=3, num_classes=num_classes).to(device)
+if cfg.load_dict == True:
+    dictpath = './output/' + cfg.train_filename + '.pt'
+    model.load_state_dict(torch.load(dictpath))
+
 
 max_lr = dataset.eta
 grad_clip = cfg.grad_clip
@@ -68,6 +72,8 @@ history = misc.to_dataframe(history)
 acc = history['val_acc'].tolist()[-1]*100
 
 filename = f'{cfg.model}_{cfg.dataset}_size{cfg.img_size}_{cfg.scheduler}'
+if cfg.load_dict == True:
+    filename = filename + '_tuned'
 
 try:
     history.to_csv(os.path.join(cfg.dict_path, filename +'.csv'), encoding='utf-8', index=False)

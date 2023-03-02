@@ -63,6 +63,8 @@ class WideResNet(nn.Module):
         self.relu = nn.ReLU(inplace=True)
         self.fc = nn.Linear(features[-1], num_classes)
         self.features = features[-1]
+        self.gap = nn.AdaptiveAvgPool2d(1)
+        self.flatten = nn.Flatten()
 
     def forward(self, x):
         out = self.conv1(x)
@@ -70,6 +72,6 @@ class WideResNet(nn.Module):
         out = self.block2(out)
         out = self.block3(out)
         out = self.relu(self.bn1(out))
-        out = F.avg_pool2d(out, 8)
-        out = out.view(-1, self.features)
+        out = self.gap(out)
+        out = self.flatten(out)
         return self.fc(out)

@@ -6,6 +6,8 @@ epochs = 90
 print_freq = 100
 eta = 1e-3
 batch_size = 32
+load_dict = False
+train_filename = ''
 
 ###DATASET
 dataset = 'cub'
@@ -26,13 +28,13 @@ num_restarts = 2
 loss_fn = 'crossentropy'
 
 ###MODEL
-model = 'resnet18' #resnet 18, resnet 34, resnet 50 (resnet 101), wideresnet
+model = 'wideresnet' #resnet 18, resnet 34, resnet 50 (resnet 101), wideresnet
 
 depth_scaling = 4 #for wideresnet only (n)
-width_scaling = 1 #for wideresnet only (k)
+width_scaling = 10 #for wideresnet only (k)
 
 ###TESTING
-filename = 'resnet50_cub_64.4acc_90epochs_onecycle'
+test_filename = 'wrn_28_10_cub_size128_onecycle'
 use_range = True
 tau_num_steps = 5
 tau_min = 0.999

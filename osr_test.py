@@ -12,7 +12,7 @@ from sklearn.metrics import roc_curve, roc_auc_score
 import config as cfg
 from tqdm import tqdm
 
-filename = cfg.filename
+filename = cfg.test_filename
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print("Using {} device".format(device))
