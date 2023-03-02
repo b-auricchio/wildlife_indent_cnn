@@ -25,7 +25,7 @@ unknown = DataLoader(datasets['test_unknown'], batch_size=128,shuffle=False)
 known = ToDeviceLoader(known, device)
 unknown = ToDeviceLoader(unknown, device)
 
-model = models.get_model(cfg.model, in_channels=3, num_classes=dataset.num_known_classes).to(device)
+model = models.get_model(cfg, in_channels=3, num_classes=dataset.num_known_classes).to(device)
 dictpath = './output/' + filename + '.pt'
 model.load_state_dict(torch.load(dictpath))
 

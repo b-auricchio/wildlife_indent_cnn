@@ -29,14 +29,14 @@ loss_fn = 'crossentropy'
 model = 'wideresnet' #resnet 18, resnet 34, resnet 50 (resnet 101), wideresnet
 
 depth_scaling = 4 #for wideresnet only (n)
-width_scaling = 4 #for wideresnet only (k)
+width_scaling = 10 #for wideresnet only (k)
 
 ###TESTING
-filename = 'resnet50_flowers_91.2acc_90epochs_onecycle'
+filename = 'resnet50_cub_64.4acc_90epochs_onecycle'
 use_range = True
 tau_num_steps = 5
-tau_min = 0.99
-tau_max = 0.999
+tau_min = 0.999
+tau_max = 0.99999
 
 #  if range not used
 tau = 0.85
