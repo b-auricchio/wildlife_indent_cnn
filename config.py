@@ -28,7 +28,7 @@ num_restarts = 2
 loss_fn = 'crossentropy'
 
 ###MODEL
-model = 'wideresnet' #resnet 18, resnet 34, resnet 50 (resnet 101), wideresnet
+model = 'resnet34' #resnet 18, resnet 34, resnet 50 (resnet 101), wideresnet
 
 depth_scaling = 4 #for wideresnet only (n)
 width_scaling = 10 #for wideresnet only (k)
