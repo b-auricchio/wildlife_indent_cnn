@@ -19,6 +19,16 @@ def get_batch_lrs(optimiser):
     for param_group in optimiser.param_groups:
         return param_group['lr']
 
+def train_accuracy(model, train_dl, batch_size, num_batches):
+    correct = 0
+    for i in range(num_batches):
+        with torch.no_grad():
+            X, y = next(iter(train_dl))
+            pred = model(X)
+            correct += (pred.argmax(1) == y).sum().item()
+    size = num_batches*batch_size
+    return correct/size
+
 def validate(model,dl,loss_fn):
     losses = []
     model.eval()
@@ -38,7 +48,7 @@ def validate(model,dl,loss_fn):
 def fit (batch_size,epochs,train_dl,test_dl,model,loss_fn,optimiser, cfg, scheduler=None,grad_clip=None, print_freq=100):
     torch.cuda.empty_cache()
     
-    history = {'lr':[0], 'val_loss':[0], 'train_loss':[0], 'val_acc':[0]}
+    history = {'lr':[], 'val_loss':[], 'train_loss':[], 'val_acc':[], 'train_acc':[]}
     for epoch in range(epochs):
         print(f"Epoch {epoch+1}\n ----------------------")
 
@@ -74,17 +84,17 @@ def fit (batch_size,epochs,train_dl,test_dl,model,loss_fn,optimiser, cfg, schedu
                 print(f"Batch {i}:  [{batch_size*i:>5d}/{train_dl.setlength():>5d}]")
         
         val_acc, val_loss = validate(model,test_dl,loss_fn)
-        #train_acc, _ = validate(model,train_dl, loss_fn)
+        train_acc = train_accuracy(model, train_dl, batch_size, 5)
 
-        print(f"Validation Error: \n Accuracy: {(val_acc*100):>0.1f}%\n")
-        #print(f"Train Error: \n Accuracy: {(train_acc*100):>0.1f}%\n")
+        print(f"\nValidation Error: \n Accuracy: {(val_acc*100):>0.1f}%\n")
+        print(f"Train Error: \n Accuracy: {(train_acc*100):>0.1f}%\n")
 
         train_loss = torch.stack(train_losses).mean().item()
         lr = optimiser.param_groups[0]['lr']
 
         history['val_acc'].append(val_acc)
         history['val_loss'].append(val_loss)
-        #history['train_acc'].append(train_acc)
+        history['train_acc'].append(train_acc)
         history['train_loss'].append(train_loss)
         history['lr'].append(lr)
 

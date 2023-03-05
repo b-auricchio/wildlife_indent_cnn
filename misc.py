@@ -7,7 +7,7 @@ import time
 def to_dataframe(history):
     output = pd.DataFrame(
     {'val_acc': history["val_acc"],
-     #'train_acc': history["train_acc"],
+     'train_acc': history["train_acc"],
      'train_loss': history["train_loss"],
      'val_loss': history["val_loss"],
      'mean_lr': history["lr"],
@@ -37,7 +37,7 @@ def export(history, model, time_elapsed):
 
 def plot_history(history):
     val_acc = history['val_acc'].to_list()
-    #train_acc = history['train_acc'].to_list()
+    train_acc = history['train_acc'].to_list()
     train_loss = history['train_loss'].to_list()
     val_loss = history['val_loss'].to_list()
     mean_lr = history['mean_lr'].to_list()
@@ -45,11 +45,11 @@ def plot_history(history):
     fig = plt.figure(figsize=(13, 4))
 
     plt.subplot(1,3,1)
-    #plt.plot(train_acc,"-bx")
+    plt.plot(train_acc,"-bx")
     plt.plot(val_acc,"-rx")
     plt.xlabel("Epoch")
     plt.ylabel("Accuracy")
-    plt.legend(["val acc"])
+    plt.legend(["train acc","val acc"])
 
     plt.subplot(1,3,2)
     plt.plot(train_loss, "-bx")
