@@ -98,10 +98,10 @@ def to_device(data,device):
 def get_scheduler(optim, cfg, epochs, steps_per_epoch=None):
     if cfg.scheduler == 'cosine':
         num_restarts = cfg.num_restarts
-        return torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optim, T_0=int(epochs/(num_restarts+1)), eta_min=cfg.eta*0.001)
+        return torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optim, T_0=int(epochs/(num_restarts+1)), eta_min=cfg.lr*0.001)
 
     if cfg.scheduler == 'onecycle':
-        return torch.optim.lr_scheduler.OneCycleLR(optim, max_lr=cfg.eta, steps_per_epoch=steps_per_epoch, epochs=epochs)
+        return torch.optim.lr_scheduler.OneCycleLR(optim, max_lr=cfg.lr, steps_per_epoch=steps_per_epoch, epochs=epochs)
 
 
 

@@ -15,7 +15,7 @@ def get_model(cfg, in_channels, num_classes):
             model = ResNet(3, ResBottleneckBlock, [3,4,23,3], useBottleneck=True, outputs=num_classes)
         if name == 'resnet152':
             model = ResNet(3, ResBottleneckBlock, [3,8,36,3], useBottleneck=True, outputs=num_classes)
-        if name == 'wideresnet':
+        if name == 'wrn':
             model = WideResNet(3, cfg.depth_scaling, cfg.width_scaling, num_classes, drop_rate=0)
             cfg.model = f'wrn_{cfg.depth_scaling*6+4}_{cfg.width_scaling}'
     except:

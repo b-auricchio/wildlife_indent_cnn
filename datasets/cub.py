@@ -10,7 +10,6 @@ import config as cfg
 
 #hyperparameters
 label_smoothing = 0.3
-eta = 1e-3
 batch_size = 32
 image_size = cfg.img_size
 num_known_classes = 160
@@ -31,7 +30,7 @@ train_transform = transforms.Compose([
     transforms.RandomHorizontalFlip(),
     transforms.Resize(int(image_size*1.2)),
     transforms.RandomCrop(image_size),
-    transforms.RandAugment(num_ops=2, magnitude=15),
+    transforms.RandAugment(num_ops=2, magnitude=2),
     transforms.ToTensor(),
     transforms.Normalize(*stats)
 ])

@@ -7,6 +7,35 @@ from IPython.display import display
 import config as cfg
 import os
 from matplotlib import pyplot as plt
+import argparse
+
+parser = argparse.ArgumentParser(description='Training script', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument('model', type=str, help='model name (REQUIRED)')
+parser.add_argument('img_size', type=int, help='image size (REQUIRED)')
+parser.add_argument('-n', type=int, help='depth scaling')
+parser.add_argument('-k', type=int, help='width scaling')
+parser.add_argument('-b', dest='batch', type=int, default=32, help='batch size')
+parser.add_argument('-e', dest='epochs', type=int,default=100, help='number of epochs')
+parser.add_argument('-l', dest='lr', type=float, default=1.5e-3, help='learning rate')
+parser.add_argument('--dataset', type=str, default='cub', help='dataset')
+parser.add_argument('--download', type=bool, default=False, help='download dataset')
+args = parser.parse_args()
+
+if args.model == 'wrn' and (args.n is None or args.k is None):
+    parser.error('wrn requires -n and -k argument')
+
+
+cfg.model = args.model
+cfg.img_size = args.img_size
+cfg.width_scaling = args.k
+cfg.depth_scaling = args.n
+
+cfg.batch_size = args.batch
+cfg.epochs = args.epochs
+cfg.lr = args.lr
+cfg.dataset = args.dataset
+cfg.download = args.download
+
 
 from datasets import flowers, cub
 import utils
@@ -40,25 +69,25 @@ if cfg.load_dict == True:
     model.load_state_dict(torch.load(dictpath))
 
 
-max_lr = dataset.eta
+lr = cfg.lr
 grad_clip = cfg.grad_clip
 weight_decay = cfg.weight_decay
 label_smoothing = dataset.label_smoothing
 
 loss_fn = nn.CrossEntropyLoss(label_smoothing=label_smoothing)
-optimiser = optim.Adam(model.parameters(),weight_decay=weight_decay,lr=max_lr)
+optimiser = optim.Adam(model.parameters(),weight_decay=weight_decay,lr=lr)
 
 scheduler = utils.get_scheduler(optimiser, cfg, epochs, len(train_dl))
 
 print("\nTraining \n ----------------------")
 print(f"Model: {cfg.model}")
 print(f"Dataset: {cfg.dataset}")
+print(f"Epochs: {cfg.epochs}")
 print(f"Scheduler: {cfg.scheduler}")
 print("\nHyperparameters \n ----------------------")
-print(f"Eta: {max_lr}")
+print(f"LR: {lr}")
 print(f"Batch size: {batch_size}")
 print(f"Image size: {dataset.image_size}")
-print(f"Width scaling: {cfg.width_scaling}")
 print("\n")
 
 start_time = time.time()

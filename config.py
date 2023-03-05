@@ -1,10 +1,16 @@
-DEBUG = True
+DEBUG = False
 debug_epochs = 10
 
+#REQUIRED ARGS
+img_size = None   #128, 224, 448
+model = '' #resnet 18, resnet 34, resnet 50 (resnet 101), wideresnet
+depth_scaling = None #for wideresnet only (n)
+width_scaling = None #for wideresnet only (k)
+
 ###TRAINING
-epochs = 90
-print_freq = 100
-eta = 1e-3
+epochs = 100
+print_freq = 50
+lr = 1.5e-3
 batch_size = 32
 load_dict = False
 train_filename = ''
@@ -12,10 +18,9 @@ train_filename = ''
 ###DATASET
 dataset = 'cub'
 download = False
-img_size = 128   #128, 224, 448
 
 ###OPTIMISER
-optimiser = 'adam'
+momentum = 0.9
 grad_clip = 0.1
 weight_decay = 1e-4
 
@@ -24,24 +29,12 @@ scheduler = 'onecycle'
 #  cosine
 num_restarts = 2
 
-###LOSS
-loss_fn = 'crossentropy'
-
-###MODEL
-model = 'resnet34' #resnet 18, resnet 34, resnet 50 (resnet 101), wideresnet
-
-depth_scaling = 4 #for wideresnet only (n)
-width_scaling = 10 #for wideresnet only (k)
-
 ###TESTING
-test_filename = 'wrn_28_10_cub_size128_onecycle'
+test_filename = 'wrn_28_2_cub_size128_onecycle'
 use_range = True
 tau_num_steps = 5
-tau_min = 0.999
+tau_min = 0.9
 tau_max = 0.99999
-
-#  if range not used
-tau = 0.85
 
 #OUTPUT
 dict_path = './output'
