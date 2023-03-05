@@ -1,8 +1,8 @@
 from models.resnet import ResNet, ResBlock, ResBottleneckBlock
 from models.wideresnet import WideResNet
 
-def get_model(cfg, in_channels, num_classes):
-    name = cfg.model
+def get_model(args, in_channels, num_classes):
+    name = args.model
     try:
         #ResNets 
         if name == 'resnet18':
@@ -16,8 +16,8 @@ def get_model(cfg, in_channels, num_classes):
         if name == 'resnet152':
             model = ResNet(3, ResBottleneckBlock, [3,8,36,3], useBottleneck=True, outputs=num_classes)
         if name == 'wrn':
-            model = WideResNet(3, cfg.n, cfg.k, num_classes, drop_rate=0)
-            cfg.model = f'wrn_{cfg.n*6+4}_{cfg.k}'
+            model = WideResNet(3, args.n, args.k, num_classes, drop_rate=0)
+            args.model = f'wrn_{args.n*6+4}_{args.k}'
     except:
         raise Exception('model not found')
 
