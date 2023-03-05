@@ -16,8 +16,8 @@ def get_model(cfg, in_channels, num_classes):
         if name == 'resnet152':
             model = ResNet(3, ResBottleneckBlock, [3,8,36,3], useBottleneck=True, outputs=num_classes)
         if name == 'wrn':
-            model = WideResNet(3, cfg.depth_scaling, cfg.width_scaling, num_classes, drop_rate=0)
-            cfg.model = f'wrn_{cfg.depth_scaling*6+4}_{cfg.width_scaling}'
+            model = WideResNet(3, cfg.n, cfg.k, num_classes, drop_rate=0)
+            cfg.model = f'wrn_{cfg.n*6+4}_{cfg.k}'
     except:
         raise Exception('model not found')
 

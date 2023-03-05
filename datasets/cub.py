@@ -6,12 +6,9 @@ import tarfile
 from torchvision import transforms
 import csv
 from PIL import Image
-import config as cfg
 
 #hyperparameters
 label_smoothing = 0.3
-batch_size = 32
-image_size = cfg.img_size
 num_known_classes = 160
 
 split_root = './datasets/cub'
@@ -27,21 +24,6 @@ def download_data():
         tar.extractall(path=root)
 
 stats = ((0.4893, 0.5014, 0.4416), (0.2284, 0.2235, 0.2612))
-train_transform = transforms.Compose([
-    transforms.RandomHorizontalFlip(),
-    transforms.Resize(int(image_size*1.2)),
-    transforms.RandomCrop(image_size),
-    transforms.RandAugment(num_ops=2, magnitude=2),
-    transforms.ToTensor(),
-    transforms.Normalize(*stats)
-])
-
-test_transform = transforms.Compose([
-    transforms.Resize(int(image_size*1.2)),
-    transforms.CenterCrop(image_size),
-    transforms.ToTensor(),
-    transforms.Normalize(*stats)
-])
 
 class CUB(Dataset):
     def __init__(self, split, transform = None):
@@ -80,9 +62,25 @@ class CUB(Dataset):
         
         return image, label
 
-def get_datasets(download=True):
+def get_datasets(image_size, download=True):
     if download:
         download_data()
+
+    train_transform = transforms.Compose([
+        transforms.RandomHorizontalFlip(),
+        transforms.Resize(int(image_size*1.2)),
+        transforms.RandomCrop(image_size),
+        transforms.RandAugment(num_ops=2, magnitude=15),
+        transforms.ToTensor(),
+        transforms.Normalize(*stats)
+    ])
+
+    test_transform = transforms.Compose([
+        transforms.Resize(int(image_size*1.2)),
+        transforms.CenterCrop(image_size),
+        transforms.ToTensor(),
+        transforms.Normalize(*stats)
+    ])
 
     train_dataset = CUB(split = 'train', transform=train_transform)
     val_dataset = CUB(split = 'val', transform=test_transform)

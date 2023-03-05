@@ -49,55 +49,57 @@ def fit (batch_size,epochs,train_dl,test_dl,model,loss_fn,optimiser, cfg, schedu
     torch.cuda.empty_cache()
     
     history = {'lr':[], 'val_loss':[], 'train_loss':[], 'val_acc':[], 'train_acc':[]}
-    for epoch in range(epochs):
-        print(f"Epoch {epoch+1}\n ----------------------")
+    try:
+        for epoch in range(epochs):
+            print(f"Epoch {epoch+1}\n ----------------------")
 
-        model.train()
+            model.train()
 
-        train_losses = []
+            train_losses = []
 
-        lrs = []
-        
-        for i, batch in enumerate(train_dl):
-            images, labels = batch
-            predictions = model(images)
-            loss = loss_fn(predictions, labels)
+            lrs = []
             
-            train_losses.append(loss)
+            for i, batch in enumerate(train_dl):
+                images, labels = batch
+                predictions = model(images)
+                loss = loss_fn(predictions, labels)
+                
+                train_losses.append(loss)
+                
+                optimiser.zero_grad()
+                loss.backward()
+                
+                if grad_clip:
+                    nn.utils.clip_grad_value_(model.parameters(),grad_clip)
+                
+                optimiser.step()
+
+                if cfg.scheduler == 'cosine': 
+                    scheduler.step(epoch+ i / len(train_dl))
+                elif cfg.scheduler == 'onecycle':
+                    scheduler.step()
+                else:
+                    print('no scheduler being used')
+
+                if i % print_freq == 0:
+                    print(f"Batch {i}:  [{batch_size*i:>5d}/{train_dl.setlength():>5d}]")
             
-            optimiser.zero_grad()
-            loss.backward()
-            
-            if grad_clip:
-                nn.utils.clip_grad_value_(model.parameters(),grad_clip)
-            
-            optimiser.step()
+            val_acc, val_loss = validate(model,test_dl,loss_fn)
+            train_acc = train_accuracy(model, train_dl, batch_size, 5)
 
-            if cfg.scheduler == 'cosine': 
-                scheduler.step(epoch+ i / len(train_dl))
-            elif cfg.scheduler == 'onecycle':
-                 scheduler.step()
-            else:
-                print('no scheduler being used')
+            print(f"\nValidation Error: \n Accuracy: {(val_acc*100):>0.1f}%\n")
+            print(f"Train Error: \n Accuracy: {(train_acc*100):>0.1f}%\n")
 
-            if i % print_freq == 0:
-                print(f"Batch {i}:  [{batch_size*i:>5d}/{train_dl.setlength():>5d}]")
-        
-        val_acc, val_loss = validate(model,test_dl,loss_fn)
-        train_acc = train_accuracy(model, train_dl, batch_size, 5)
+            train_loss = torch.stack(train_losses).mean().item()
+            lr = optimiser.param_groups[0]['lr']
 
-        print(f"\nValidation Error: \n Accuracy: {(val_acc*100):>0.1f}%\n")
-        print(f"Train Error: \n Accuracy: {(train_acc*100):>0.1f}%\n")
-
-        train_loss = torch.stack(train_losses).mean().item()
-        lr = optimiser.param_groups[0]['lr']
-
-        history['val_acc'].append(val_acc)
-        history['val_loss'].append(val_loss)
-        history['train_acc'].append(train_acc)
-        history['train_loss'].append(train_loss)
-        history['lr'].append(lr)
-
+            history['val_acc'].append(val_acc)
+            history['val_loss'].append(val_loss)
+            history['train_acc'].append(train_acc)
+            history['train_loss'].append(train_loss)
+            history['lr'].append(lr)
+    except KeyboardInterrupt:
+        print('Interrupted training')
     return history
 
 def to_device(data,device):
@@ -107,7 +109,7 @@ def to_device(data,device):
 
 def get_scheduler(optim, cfg, epochs, steps_per_epoch=None):
     if cfg.scheduler == 'cosine':
-        num_restarts = cfg.num_restarts
+        num_restarts = 2
         return torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optim, T_0=int(epochs/(num_restarts+1)), eta_min=cfg.lr*0.001)
 
     if cfg.scheduler == 'onecycle':

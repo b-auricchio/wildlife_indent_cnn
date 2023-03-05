@@ -6,11 +6,9 @@ import tarfile
 from torchvision import transforms
 import csv
 from PIL import Image
-import config as cfg
 
 #hypermarameters
 label_smoothing = 0
-image_size = cfg.img_size
 num_known_classes = 92
 
 split_root = './datasets/flowers102'
@@ -30,21 +28,6 @@ def download_data():
     download_url(labels_url, root, labels_filename)
 
 stats = ((0.4668, 0.3928, 0.3011),(0.2976, 0.2467, 0.2748))
-train_transform = transforms.Compose([
-    transforms.RandomHorizontalFlip(),
-    transforms.Resize(int(image_size*1.1)),
-    transforms.RandomCrop(image_size),
-    transforms.RandAugment(num_ops=1, magnitude=1),
-    transforms.ToTensor(),
-    transforms.Normalize(*stats)
-])
-
-test_transform = transforms.Compose([
-    transforms.Resize(int(image_size*1.1)),
-    transforms.CenterCrop(image_size),
-    transforms.ToTensor(),
-    transforms.Normalize(*stats)
-])
 
 class Flowers(Dataset):
     def __init__(self, split, transform = None):
@@ -83,9 +66,24 @@ class Flowers(Dataset):
         
         return image, label
 
-def get_datasets(download=True):
+def get_datasets(image_size, download=True):
     if download:
         download_data()
+    train_transform = transforms.Compose([
+        transforms.RandomHorizontalFlip(),
+        transforms.Resize(int(image_size*1.1)),
+        transforms.RandomCrop(image_size),
+        transforms.RandAugment(num_ops=1, magnitude=1),
+        transforms.ToTensor(),
+        transforms.Normalize(*stats)
+    ])
+
+    test_transform = transforms.Compose([
+        transforms.Resize(int(image_size*1.1)),
+        transforms.CenterCrop(image_size),
+        transforms.ToTensor(),
+        transforms.Normalize(*stats)
+    ])
 
     train_dataset = Flowers(split = 'train', transform=train_transform)
     val_dataset = Flowers(split = 'val', transform=test_transform)

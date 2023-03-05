@@ -5,29 +5,47 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from utils import show_batch, ToDeviceLoader
 from models import models
-from datasets import cub, flowers
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.metrics import roc_curve, roc_auc_score
-import config as cfg
 from tqdm import tqdm
+import argparse
+from datasets import cub, flowers
 
-filename = cfg.test_filename
+parser = argparse.ArgumentParser(description='Open-set testing script', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument('model', type=str, help='model name (REQUIRED)')
+parser.add_argument('img_size', type=int, help='image size (REQUIRED)')
+parser.add_argument('filename', type=str, help='filename of dict (REQUIRED)')
+parser.add_argument('--range', nargs='+', type=float,help='range of tau (REQUIRED)', default=[0.9,0.99])
+parser.add_argument('--steps', type=int, default=5, help='number of steps to iterate over')
+parser.add_argument('-n', type=int, help='depth scaling')
+parser.add_argument('-k', type=int, help='width scaling')
+parser.add_argument('--dataset', type=str, default='cub', help='dataset')
+parser.add_argument('--download', type=bool, default=False, help='download dataset')
+args = parser.parse_args()
 
+if args.model == 'wrn' and (args.n is None or args.k is None):
+    parser.error('wrn requires -n and -k argument')
+
+filename = args.filename
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print("Using {} device".format(device))
 
-dataset = eval(cfg.dataset)
-datasets = dataset.get_datasets(download=False)
+dataset = eval(args.dataset)
+datasets = dataset.get_datasets(args.img_size, download=False)
 
 known = DataLoader(datasets['test_known'], batch_size=128,shuffle=False)
 unknown = DataLoader(datasets['test_unknown'], batch_size=128,shuffle=False)
 known = ToDeviceLoader(known, device)
 unknown = ToDeviceLoader(unknown, device)
 
-model = models.get_model(cfg, in_channels=3, num_classes=dataset.num_known_classes).to(device)
+model = models.get_model(args, in_channels=3, num_classes=dataset.num_known_classes).to(device)
 dictpath = './output/' + filename + '.pt'
 model.load_state_dict(torch.load(dictpath))
+
+tau_min = args.range[0]
+tau_max = args.range[1]
+tau_num_steps = args.steps
 
 def get_binary_predictions_softmax(tau):
     model.eval()
@@ -112,7 +130,7 @@ def roc(predictions, targets, plot=False):
 
     return auroc
 
-for tau in np.linspace(cfg.tau_min, cfg.tau_max, cfg.tau_num_steps):
+for tau in np.linspace(tau_min, tau_max, tau_num_steps):
     print(f'\n Threshold: {tau}\n ----------------------')
     predictions, targets, in_mean, out_mean = get_binary_predictions_softmax(tau)
     auroc = roc(targets, predictions)
