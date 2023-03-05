@@ -10,11 +10,10 @@ import config as cfg
 
 #hypermarameters
 label_smoothing = 0
-eta = 1e-2
-batch_size = 128
 image_size = cfg.img_size
 num_known_classes = 92
 
+split_root = './datasets/flowers102'
 root = './data/flowers102/'
 image_root = os.path.join(root, 'jpg')
 
@@ -35,7 +34,7 @@ train_transform = transforms.Compose([
     transforms.RandomHorizontalFlip(),
     transforms.Resize(int(image_size*1.1)),
     transforms.RandomCrop(image_size),
-    transforms.RandAugment(num_ops=1, magnitude=8),
+    transforms.RandAugment(num_ops=1, magnitude=1),
     transforms.ToTensor(),
     transforms.Normalize(*stats)
 ])
@@ -52,13 +51,13 @@ class Flowers(Dataset):
         self.num_classes = 102-10
         self.split = split
         if split == 'train':
-            self.data_path = os.path.join(root,"train.csv")
+            self.data_path = os.path.join(split_root,"train.csv")
         if split == 'val':
-            self.data_path = os.path.join(root,"val.csv")
+            self.data_path = os.path.join(split_root,"val.csv")
         if split == 'test_known':
-            self.data_path = os.path.join(root,"test_known.csv")
+            self.data_path = os.path.join(split_root,"test_known.csv")
         if split == 'test_unknown':
-            self.data_path = os.path.join(root,"test_unknown.csv")
+            self.data_path = os.path.join(split_root,"test_unknown.csv")
 
         self.image_root = image_root
         self.transform = transform

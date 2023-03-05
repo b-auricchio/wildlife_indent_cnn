@@ -14,6 +14,7 @@ batch_size = 32
 image_size = cfg.img_size
 num_known_classes = 160
 
+split_root = './datasets/cub'
 root = './data/cub/'
 image_root = os.path.join(root, 'CUB_200_2011/images')
 
@@ -47,13 +48,13 @@ class CUB(Dataset):
         self.num_classes = num_known_classes
         self.split = split
         if split == 'train':
-            self.data_path = os.path.join(root,"train.csv")
+            self.data_path = os.path.join(split_root,"train.csv")
         if split == 'val':
-            self.data_path = os.path.join(root,"val.csv")
+            self.data_path = os.path.join(split_root,"val.csv")
         if split == 'test_known':
-            self.data_path = os.path.join(root,"test_known.csv")
+            self.data_path = os.path.join(split_root,"test_known.csv")
         if split == 'test_unknown':
-            self.data_path = os.path.join(root,"test_unknown.csv")
+            self.data_path = os.path.join(split_root,"test_unknown.csv")
 
         self.image_root = image_root
         self.transform = transform
