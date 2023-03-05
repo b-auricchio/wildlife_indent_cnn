@@ -19,7 +19,8 @@ parser.add_argument('-l', dest='lr', type=float, default=1e-3, help='learning ra
 parser.add_argument('--dataset', type=str, default='cub', help='dataset')
 parser.add_argument('--download', type=bool, default=False, help='download dataset')
 parser.add_argument('--scheduler', type=str, default='cosine', help='scheduler')
-parser.add_argument('--freq', dest='freq', type=int, default=50, help='print frequency')
+parser.add_argument('--freq', type=int, default=50, help='print frequency')
+parser.add_argument('--optim', type=str, default='sgd', help='optimiser')
 
 args = parser.parse_args()
 
@@ -58,7 +59,8 @@ weight_decay = 1e-4
 label_smoothing = dataset.label_smoothing
 
 loss_fn = nn.CrossEntropyLoss(label_smoothing=label_smoothing)
-optimiser = optim.Adam(model.parameters(),weight_decay=weight_decay,lr=lr)
+if args.optim == 'adam': optimiser = optim.Adam(model.parameters(),weight_decay=weight_decay,lr=lr)
+if args.optim == 'sgd': optimiser = optim.SGD(model.parameters(),lr=args.lr, momentum=0.9,weight_decay=weight_decay)
 
 scheduler = utils.get_scheduler(optimiser, args, epochs, len(train_dl))
 

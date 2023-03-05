@@ -18,7 +18,7 @@ torch.cuda.empty_cache()
 
 dataset = eval(cfg.dataset)
 
-batch_size = 64
+batch_size = 32
 num_classes = dataset.num_known_classes
 datasets = dataset.get_datasets(cfg.download)
 
@@ -32,7 +32,7 @@ if cfg.load_dict == True:
     model.load_state_dict(torch.load(dictpath))
 
 
-max_lr = dataset.eta
+max_lr = cfg.lr
 grad_clip = cfg.grad_clip
 weight_decay = cfg.weight_decay
 label_smoothing = dataset.label_smoothing
@@ -41,8 +41,6 @@ loss_fn = nn.CrossEntropyLoss(label_smoothing=label_smoothing)
 optimiser = optim.Adam(model.parameters(),weight_decay=weight_decay,lr=max_lr)
 
 lr_finder = LRFinder(model, optimiser, loss_fn, device=device)
-lr_finder.range_test(train_dl, val_dl, end_lr=1, num_iter=100, step_mode='linear')
-lr_finder.plot(log_lr=False) # to inspect the loss-learning rate graph
+lr_finder.range_test(train_dl, end_lr=100, num_iter=100)
+lr_finder.plot() # to inspect the loss-learning rate graph
 lr_finder.reset() # to reset the model and optimizer to their initial state
-
-
