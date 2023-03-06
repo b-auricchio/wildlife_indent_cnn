@@ -85,7 +85,7 @@ def fit (batch_size,epochs,train_dl,test_dl,model,loss_fn,optimiser, cfg, schedu
                     print(f"Batch {i}:  [{batch_size*i:>5d}/{train_dl.setlength():>5d}]")
             
             val_acc, val_loss = validate(model,test_dl,loss_fn)
-            train_acc = train_accuracy(model, train_dl, batch_size, 5)
+            train_acc = train_accuracy(model, train_dl, batch_size, 15)
 
             print(f"\nValidation Error: \n Accuracy: {(val_acc*100):>0.1f}%\n")
             print(f"Train Error: \n Accuracy: {(train_acc*100):>0.1f}%\n")
@@ -113,7 +113,7 @@ def get_scheduler(optim, cfg, epochs, steps_per_epoch=None):
         return torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optim, T_0=int(epochs/(num_restarts+1)), eta_min=cfg.lr*0.001)
 
     if cfg.scheduler == 'onecycle':
-        return torch.optim.lr_scheduler.OneCycleLR(optim, max_lr=cfg.lr, steps_per_epoch=steps_per_epoch, epochs=epochs)
+        return torch.optim.lr_scheduler.OneCycleLR(optim, max_lr=cfg.lr, steps_per_epoch=steps_per_epoch, epochs=epochs, div_factor=10, final_div_factor=100)
 
 
 

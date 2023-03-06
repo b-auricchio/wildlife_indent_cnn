@@ -70,7 +70,7 @@ def get_datasets(image_size, download=True):
         transforms.RandomHorizontalFlip(),
         transforms.Resize(int(image_size*1.2)),
         transforms.RandomCrop(image_size),
-        transforms.RandAugment(num_ops=2, magnitude=15),
+        transforms.RandAugment(num_ops=2, magnitude=8),
         transforms.ToTensor(),
         transforms.Normalize(*stats)
     ])
