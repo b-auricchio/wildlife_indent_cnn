@@ -16,7 +16,7 @@ parser = argparse.ArgumentParser(description='Open-set testing script', formatte
 parser.add_argument('model', type=str, help='model name (REQUIRED)')
 parser.add_argument('img_size', type=int, help='image size (REQUIRED)')
 parser.add_argument('filename', type=str, help='filename of dict (REQUIRED)')
-parser.add_argument('--range', nargs='+', type=float,help='range of tau (REQUIRED)', default=[0.9,0.99])
+parser.add_argument('--range', nargs='+', type=float,help='range of tau', default=[0.9,0.99])
 parser.add_argument('--steps', type=int, default=5, help='number of steps to iterate over')
 parser.add_argument('-n', type=int, help='depth scaling')
 parser.add_argument('-k', type=int, help='width scaling')
@@ -32,7 +32,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 print("Using {} device".format(device))
 
 dataset = eval(args.dataset)
-datasets = dataset.get_datasets(args.img_size, download=False)
+datasets = dataset.get_datasets(args.img_size, 0, download=args.download)
 
 known = DataLoader(datasets['test_known'], batch_size=128,shuffle=False)
 unknown = DataLoader(datasets['test_unknown'], batch_size=128,shuffle=False)

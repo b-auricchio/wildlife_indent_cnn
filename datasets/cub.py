@@ -62,7 +62,7 @@ class CUB(Dataset):
         
         return image, label
 
-def get_datasets(image_size, download=True):
+def get_datasets(image_size, randmag, download=True):
     if download:
         download_data()
 
@@ -70,7 +70,7 @@ def get_datasets(image_size, download=True):
         transforms.RandomHorizontalFlip(),
         transforms.Resize(int(image_size*1.2)),
         transforms.RandomCrop(image_size),
-        transforms.RandAugment(num_ops=2, magnitude=8),
+        transforms.RandAugment(num_ops=2, magnitude=randmag),
         transforms.ToTensor(),
         transforms.Normalize(*stats)
     ])
