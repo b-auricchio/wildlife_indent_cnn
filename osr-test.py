@@ -14,6 +14,7 @@ from datasets import cub, flowers
 
 parser = argparse.ArgumentParser(description='Open-set testing script', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('model', type=str, help='model name (REQUIRED)')
+parser.add_argument('--device', type=str, default='cuda', help='device')
 parser.add_argument('img_size', type=int, help='image size (REQUIRED)')
 parser.add_argument('filename', type=str, help='filename of dict (REQUIRED)')
 parser.add_argument('--range', nargs='+', type=float,help='range of tau', default=[0.9,0.99])
@@ -28,8 +29,9 @@ if args.model == 'wrn' and (args.n is None or args.k is None):
     parser.error('wrn requires -n and -k argument')
 
 filename = args.filename
-device = "cuda" if torch.cuda.is_available() else "cpu"
-print("Using {} device".format(device))
+# device = "cuda" if torch.cuda.is_available() else "cpu"
+# print("Using {} device".format(device))
+device = args.device
 
 dataset = eval(args.dataset)
 datasets = dataset.get_datasets(args.img_size, 0, download=args.download)

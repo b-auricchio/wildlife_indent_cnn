@@ -16,12 +16,12 @@ parser.add_argument('-k', type=int, help='width scaling')
 parser.add_argument('-b', dest='batch', type=int, default=32, help='batch size')
 parser.add_argument('-e', dest='epochs', type=int,default=100, help='number of epochs')
 parser.add_argument('-l', dest='lr', type=float, default=1e-3, help='learning rate')
-parser.add_argument('-m', dest='randmag', type=float, default=20, help='magnitude of RandAugment')
+parser.add_argument('-m', dest='randmag', type=int, default=2, help='magnitude of RandAugment')
 parser.add_argument('--dataset', type=str, default='cub', help='dataset')
 parser.add_argument('--download', type=bool, default=False, help='download dataset')
-parser.add_argument('--scheduler', type=str, default='cosine', help='scheduler')
+parser.add_argument('--scheduler', type=str, default='onecycle', help='scheduler')
 parser.add_argument('--freq', type=int, default=50, help='print frequency')
-parser.add_argument('--optim', type=str, default='sgd', help='optimiser')
+parser.add_argument('--optim', type=str, default='adam', help='optimiser')
 
 dict_path = './output'
 cloud_dict_path = '../drive/MyDrive/RP3'
