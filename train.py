@@ -12,11 +12,11 @@ parser = argparse.ArgumentParser(description='Training script', formatter_class=
 parser.add_argument('model', type=str, help='model name (REQUIRED)')
 parser.add_argument('img_size', type=int, help='image size (REQUIRED)')
 parser.add_argument('-n', type=int, help='depth scaling')
-parser.add_argument('-k', type=int, help='width scaling')
+parser.add_argument('-k', default=1.0, type=float, help='width scaling')
 parser.add_argument('-b', dest='batch', type=int, default=32, help='batch size')
 parser.add_argument('-e', dest='epochs', type=int,default=100, help='number of epochs')
 parser.add_argument('-l', dest='lr', type=float, default=1e-3, help='learning rate')
-parser.add_argument('-m', dest='randmag', type=int, default=2, help='magnitude of RandAugment')
+parser.add_argument('-m', dest='randmag', type=int, default=15, help='magnitude of RandAugment')
 parser.add_argument('--dataset', type=str, default='cub', help='dataset')
 parser.add_argument('--download', type=bool, default=False, help='download dataset')
 parser.add_argument('--scheduler', type=str, default='onecycle', help='scheduler')
@@ -75,6 +75,7 @@ print(f"Dataset: {args.dataset}")
 print(f"Epochs: {args.epochs}")
 print(f"Scheduler: {args.scheduler}")
 print(f"Optimiser: {args.optim}")
+print(f"Width scaling: {args.k}")
 print("\nHyperparameters \n ----------------------")
 print(f"LR: {lr}")
 print(f"Batch size: {batch_size}")
@@ -91,7 +92,7 @@ history = misc.to_dataframe(history)
 
 acc = history['val_acc'].tolist()[-1]*100
 
-filename = f'{args.model}_{args.dataset}_size{args.img_size}_{args.scheduler}'
+filename = f'{args.model}_{args.dataset}_size{args.img_size}_{args.scheduler}_k{args.k}'
 
 try:
     history.to_csv(os.path.join(dict_path, filename +'.csv'), encoding='utf-8', index=False)
