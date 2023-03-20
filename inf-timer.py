@@ -13,9 +13,9 @@ parser = argparse.ArgumentParser(description='Open-set testing script', formatte
 parser.add_argument('model', type=str, help='model name (REQUIRED)')
 parser.add_argument('img_size', type=int, help='image size (REQUIRED)')
 parser.add_argument('filename', type=str, help='filename of dict (REQUIRED)')
-parser.add_argument('-b', type=int, default = 128, help='batch size')
+parser.add_argument('-b', type=int, default = 1, help='batch size')
 parser.add_argument('-n', type=int, help='depth scaling')
-parser.add_argument('-k', type=int, help='width scaling')
+parser.add_argument('-k', type=float, help='width scaling')
 parser.add_argument('--dataset', type=str, default='cub', help='dataset')
 
 args = parser.parse_args()

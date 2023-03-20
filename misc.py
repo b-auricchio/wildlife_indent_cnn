@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from torchvision.utils import make_grid
 import torch
+import matplotlib.ticker as mtick
 import time
 
 def to_dataframe(history):
@@ -42,7 +43,7 @@ def plot_history(history):
     val_loss = history['val_loss'].to_list()
     mean_lr = history['mean_lr'].to_list()
 
-    fig = plt.figure(figsize=(13, 4))
+    fig = plt.figure(figsize=(14, 4))
 
     plt.subplot(1,3,1)
     plt.plot(train_acc,"-bx")
@@ -63,7 +64,9 @@ def plot_history(history):
     plt.xlabel("Epoch")
     plt.ylabel("Learning rate")
 
+    plt.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
     plt.show()
+ 
 
 '''
 def plot_result(model, dl, class_names):
@@ -72,3 +75,4 @@ def plot_result(model, dl, class_names):
         fig = plt.figure(figsize=(5,5))
         break
 '''
+

@@ -45,6 +45,10 @@ def validate(model,dl,loss_fn):
     acc = correct/size
     return acc, loss
 
+def count_parameters(model):
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+
 def fit (batch_size,epochs,train_dl,test_dl,model,loss_fn,optimiser, cfg, scheduler=None,grad_clip=None, print_freq=100):
     torch.cuda.empty_cache()
     

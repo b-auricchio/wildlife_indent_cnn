@@ -6,6 +6,7 @@ import time
 from IPython.display import display
 import os
 from matplotlib import pyplot as plt
+import seaborn as sns
 import argparse
 
 parser = argparse.ArgumentParser(description='Training script', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -56,6 +57,7 @@ val_dl = ToDeviceLoader(val_dl,device)
 
 model = models.get_model(args, in_channels=3, num_classes=num_classes).to(device)
 
+
 epochs = args.epochs
 lr = args.lr
 grad_clip = 0.1
@@ -92,7 +94,7 @@ history = misc.to_dataframe(history)
 
 acc = history['val_acc'].tolist()[-1]*100
 
-filename = f'{args.model}_{args.dataset}_size{args.img_size}_{args.scheduler}_k{args.k}'
+filename = f'{args.model}_{args.dataset}_size{args.img_size}_{args.scheduler}_k{args.k}_m{args.randmag}'
 
 try:
     history.to_csv(os.path.join(dict_path, filename +'.csv'), encoding='utf-8', index=False)
