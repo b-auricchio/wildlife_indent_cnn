@@ -31,7 +31,7 @@ args = parser.parse_args()
 
 
 
-filenames = ['224/resnet18_cub_size224_onecycle', '224/resnet34_cub_size224_onecycle', '224/resnet50_cub_size224_onecycle', '224/resnet101_cub_size224_onecycle_k1.0']
+filenames = ['448/resnet18_cub_size448_onecycle_k1.0_m15', '448/resnet34_cub_size448_onecycle_k1.0', '448/resnet50_cub_size448_onecycle_k1.0', '448/resnet101_cub_size448_onecycle_k1.0_m15']
 ks = [1,1,1,1]
 model_names = ['resnet18', 'resnet34', 'resnet50', 'resnet101']
 
@@ -40,7 +40,7 @@ model_names = ['resnet18', 'resnet34', 'resnet50', 'resnet101']
 # ks = [1, 1.5, 2, 2.5]
 # model_names = ['resnet18','resnet18', 'resnet18','resnet18']
 
-img_size = 224
+img_size = 448
 dataset = 'cub'
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
