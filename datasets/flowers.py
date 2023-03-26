@@ -66,14 +66,14 @@ class Flowers(Dataset):
         
         return image, label
 
-def get_datasets(image_size, download=True):
+def get_datasets(image_size, randmag = 8, download=True):
     if download:
         download_data()
     train_transform = transforms.Compose([
         transforms.RandomHorizontalFlip(),
         transforms.Resize(int(image_size*1.1)),
         transforms.RandomCrop(image_size),
-        transforms.RandAugment(num_ops=1, magnitude=1),
+        transforms.RandAugment(num_ops=1, magnitude=8),
         transforms.ToTensor(),
         transforms.Normalize(*stats)
     ])

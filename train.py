@@ -55,7 +55,7 @@ val_dl = DataLoader(datasets['val'], batch_size=batch_size)
 train_dl = ToDeviceLoader(train_dl,device)
 val_dl = ToDeviceLoader(val_dl,device)
 
-model = models.get_model(args.model, args.k,in_channels=3, num_classes=num_classes).to(device)
+model = models.get_model(args.model, args.k, in_channels=3, num_classes=num_classes).to(device)
 
 
 epochs = args.epochs
