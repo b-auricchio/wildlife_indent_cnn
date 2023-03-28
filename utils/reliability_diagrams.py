@@ -277,4 +277,5 @@ def reliability_diagrams(results, num_bins=10,
         
     plt.show()
 
-    if return_fig: return fig
+    if return_fig: return fig, bin_data['expected_calibration_error']
+    else: return

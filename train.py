@@ -34,11 +34,10 @@ if args.model == 'wrn' and (args.n is None or args.k is None):
 
 
 from datasets import flowers, cub
-import utils
-from utils import fit
-from utils import ToDeviceLoader
+import utils.utils as utils
+from utils.utils import fit, ToDeviceLoader
 from models import models
-import misc
+import utils.misc as misc
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print("Using {} device".format(device))
