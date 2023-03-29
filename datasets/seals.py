@@ -11,19 +11,19 @@ from PIL import Image
 label_smoothing = 0
 num_known_classes = 43
 
-split_root = './datasets/cub'
-root = './data/cub/'
-image_root = root #os.path.join(root, 'CUB_200_2011/images')
+split_root = './datasets/seals'
+root = './data/'
+image_root = root+'seals/' 
 
 def download_data():
     filename = 'seals.tar.gz'
-    url = 'https://www.dropbox.com/s/fmmxuik069bihl0/seals.tar.gz?dl=0'
+    url = 'http://dl.dropboxusercontent.com/s/fmmxuik069bihl0/seals.tar.gz?dl=0'
     download_url(url, root, filename)
 
     with tarfile.open(os.path.join(root, filename), "r:gz") as tar:
         tar.extractall(path=root)
 
-stats = ((1,1,1),(0,0,0))
+stats = ((0,0,0),(1,1,1))
 
 class Seals(Dataset):
     def __init__(self, split, transform = None):
@@ -53,10 +53,10 @@ class Seals(Dataset):
 
     def __getitem__(self, index):
         image_path = os.path.join(self.image_root, self.data[index][0])
-        
         label = int(self.data[index][1])
 
-        image = Image.open(image_path).convert("RGB")
+        image = Image.open(image_path).convert('RGB')
+
         if self.transform is not None:
             image = self.transform(image)
         

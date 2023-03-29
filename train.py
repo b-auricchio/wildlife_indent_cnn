@@ -33,7 +33,7 @@ if args.model == 'wrn' and (args.n is None or args.k is None):
     parser.error('wrn requires -n and -k argument')
 
 
-from datasets import flowers, cub
+from datasets import flowers, cub, seals
 import utils.utils as utils
 from utils.utils import fit, ToDeviceLoader
 from models import models
@@ -44,7 +44,6 @@ print("Using {} device".format(device))
 torch.cuda.empty_cache()
 
 dataset = eval(args.dataset)
-
 batch_size = args.batch
 num_classes = dataset.num_known_classes
 datasets = dataset.get_datasets(args.img_size, args.randmag, download=args.download)
