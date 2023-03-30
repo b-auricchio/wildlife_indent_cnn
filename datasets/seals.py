@@ -23,7 +23,7 @@ def download_data():
     with tarfile.open(os.path.join(root, filename), "r:gz") as tar:
         tar.extractall(path=root)
 
-stats = ((0,0,0),(1,1,1))
+stats = ((0.4341, 0.4383, 0.4429),(0.2279, 0.2280, 0.2282))
 
 class Seals(Dataset):
     def __init__(self, split, transform = None):
