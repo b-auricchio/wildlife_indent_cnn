@@ -57,7 +57,7 @@ class ResBottleneckBlock(nn.Module):
         return F.relu(input)
 
 class ResNet(nn.Module):
-    def __init__(self, in_channels, resblock, repeat, outputs, useBottleneck=False, features=None, k=1):
+    def __init__(self, in_channels, resblock, repeat, outputs, useBottleneck=False, features=None, k=1, init_weights=True):
         super().__init__()
         self.name = 'resnet'
 
@@ -101,6 +101,9 @@ class ResNet(nn.Module):
         self.flatten = nn.Flatten()
         self.fc = nn.Linear(features[4], outputs)
 
+        if init_weights:
+            self._initialize_weights()
+
     def forward(self, input):
         out = self.layer0(input)
         out = self.layer1(out)
@@ -112,3 +115,16 @@ class ResNet(nn.Module):
         out = self.fc(out)
 
         return out
+    
+    def _initialize_weights(self):
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+                if m.bias is not None:
+                    nn.init.constant_(m.bias, 0)
+            elif isinstance(m, nn.BatchNorm2d):
+                nn.init.constant_(m.weight, 1)
+                nn.init.constant_(m.bias, 0)
+            elif isinstance(m, nn.Linear):
+                nn.init.normal_(m.weight, 0, 0.01)
+                nn.init.constant_(m.bias, 0)

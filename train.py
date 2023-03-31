@@ -6,7 +6,6 @@ import time
 from IPython.display import display
 import os
 from matplotlib import pyplot as plt
-import seaborn as sns
 import argparse
 
 parser = argparse.ArgumentParser(description='Training script', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -55,11 +54,10 @@ val_dl = ToDeviceLoader(val_dl,device)
 
 model = models.get_model(args.model, args.k, in_channels=3, num_classes=num_classes).to(device)
 
-
 epochs = args.epochs
 lr = args.lr
 grad_clip = 0.1
-weight_decay = 1e-4
+weight_decay = 1e-5
 label_smoothing = dataset.label_smoothing
 
 loss_fn = nn.CrossEntropyLoss(label_smoothing=label_smoothing)
