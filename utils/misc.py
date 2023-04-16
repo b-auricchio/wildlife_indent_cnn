@@ -20,12 +20,12 @@ def to_dataframe(history):
 def show_batch(dl):
     for batch in dl:
         images,labels = batch
-        fig, ax = plt.subplots(figsize=(7.5,7.5))
-        ax.set_yticks([])
-        ax.set_xticks([])
-        ax.imshow(make_grid(images[:20],nrow=5).permute(1,2,0))
+        plt.figure(7.5,7.5)
+        plt.setyticks([])
+        plt.set_xticks([])
+        plt.imshow(make_grid(images[:20],nrow=5).permute(1,2,0))
         break
-    plt.show()
+    # plt.show()
 
 def export(history, model, time_elapsed):
     history = to_dataframe(history)

@@ -7,12 +7,12 @@ from tqdm import tqdm
 def show_batch(dl):
     for batch in dl:
         images,labels = batch
-        fig, ax = plt.subplots(figsize=(7.5,7.5))
-        ax.set_yticks([])
-        ax.set_xticks([])
-        ax.imshow(make_grid(images[:20],nrow=5).permute(1,2,0))
-        plt.show()
+        # plt.figure(figsize=(7.5,7.5))
+        plt.yticks([])
+        plt.xticks([])
+        plt.imshow(make_grid(images[:20],nrow=5).permute(1,2,0))
         break
+    # plt.show()
         
 
 def get_batch_lrs(optimiser):
@@ -80,7 +80,7 @@ def fit (batch_size,epochs,train_dl,test_dl,model,loss_fn,optimiser, cfg, schedu
 
                 if cfg.scheduler == 'cosine': 
                     scheduler.step(epoch+ i / len(train_dl))
-                elif cfg.scheduler == 'onecycle':
+                elif cfg.scheduler == 'onecycle' or cfg.scheduler == 'exponential':
                     scheduler.step()
                 else:
                     print('no scheduler being used')
@@ -111,14 +111,15 @@ def to_device(data,device):
         return [to_device(x,device) for x in data]
     return data.to(device,non_blocking=True)
 
-def get_scheduler(optim, cfg, epochs, steps_per_epoch=None):
-    if cfg.scheduler == 'cosine':
+def get_scheduler(optim, args, epochs, steps_per_epoch=None):
+    if args.scheduler == 'cosine':
         num_restarts = 2
-        return torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optim, T_0=int(epochs/(num_restarts+1)), eta_min=cfg.lr*0.001)
+        return torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optim, T_0=int(epochs/(num_restarts+1)), eta_min=args.lr*0.001)
 
-    if cfg.scheduler == 'onecycle':
-        return torch.optim.lr_scheduler.OneCycleLR(optim, max_lr=cfg.lr, steps_per_epoch=steps_per_epoch, epochs=epochs, div_factor=10, final_div_factor=100)
-
+    if args.scheduler == 'onecycle':
+        return torch.optim.lr_scheduler.OneCycleLR(optim, max_lr=args.lr, steps_per_epoch=steps_per_epoch, epochs=epochs, div_factor=10, final_div_factor=100)
+    if args.scheduler == 'exponential':
+        return torch.optim.lr_scheduler.ExponentialLR(optim, gamma=0.95)
 
 
 class ToDeviceLoader:

@@ -12,7 +12,7 @@ parser = argparse.ArgumentParser(description='Training script', formatter_class=
 parser.add_argument('model', type=str, help='model name (REQUIRED)')
 parser.add_argument('img_size', type=int, help='image size (REQUIRED)')
 parser.add_argument('-n', type=int, help='depth scaling')
-parser.add_argument('-k', default=1.0, type=float, help='width scaling')
+parser.add_argument('-k', default=1, help='width scaling')
 parser.add_argument('-b', dest='batch', type=int, default=32, help='batch size')
 parser.add_argument('-e', dest='epochs', type=int,default=100, help='number of epochs')
 parser.add_argument('-l', dest='lr', type=float, default=1e-3, help='learning rate')
@@ -22,6 +22,8 @@ parser.add_argument('--download', type=bool, default=False, help='download datas
 parser.add_argument('--scheduler', type=str, default='onecycle', help='scheduler')
 parser.add_argument('--freq', type=int, default=50, help='print frequency')
 parser.add_argument('--optim', type=str, default='adam', help='optimiser')
+parser.add_argument('--load', type=bool, default=False, help='load model')
+
 
 dict_path = './output'
 cloud_dict_path = '../drive/MyDrive/RP3'
@@ -53,6 +55,14 @@ train_dl = ToDeviceLoader(train_dl,device)
 val_dl = ToDeviceLoader(val_dl,device)
 
 model = models.get_model(args.model, args.k, in_channels=3, num_classes=num_classes).to(device)
+
+# Load model dict
+if args.load:
+    load_path = f'.\\output\\{args.dataset}'
+    dict_name = f'{args.model}_{args.k}'
+    path = os.path.join(load_path, dict_name + '.pt')
+    model.load_state_dict(torch.load(path))
+    print(f'Loaded model from {path}')
 
 epochs = args.epochs
 lr = args.lr
@@ -90,8 +100,8 @@ history = misc.to_dataframe(history)
 
 acc = history['val_acc'].tolist()[-1]*100
 
-filename = f'{args.model}_{args.dataset}_size{args.img_size}_{args.scheduler}_k{args.k}_m{args.randmag}'
-
+if not args.load: filename = f'{args.model}_{args.dataset}_size{args.img_size}_{args.scheduler}_k{args.k}_m{args.randmag}'
+if args.load: filename = f'{args.model}_{args.dataset}_size{args.img_size}_{args.scheduler}_k{args.k}_m{args.randmag}_ft'
 try:
     history.to_csv(os.path.join(dict_path, filename +'.csv'), encoding='utf-8', index=False)
     torch.save(model.state_dict(), os.path.join(dict_path, filename +'.pt'))

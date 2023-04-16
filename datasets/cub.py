@@ -67,7 +67,7 @@ def get_datasets(image_size, randmag, download=True):
         download_data()
 
     train_transform = transforms.Compose([
-        transforms.RandomHorizontalFlip(),
+        # transforms.RandomHorizontalFlip(),
         transforms.Resize(int(image_size*1.2)),
         transforms.RandomCrop(image_size),
         transforms.RandAugment(num_ops=2, magnitude=randmag),
